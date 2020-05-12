@@ -1,0 +1,37 @@
+<metadata>
+  <Job>
+    <Key>Load-BlueCross-Fees</Key>
+    <Description null="yes" />
+    <CreatedBy>crissler</CreatedBy>
+    <CreatedOn>5/12/2020 6:03:59 PM</CreatedOn>
+    <UpdatedBy>crissler</UpdatedBy>
+    <UpdatedOn>5/12/2020 6:11:15 PM</UpdatedOn>
+    <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
+    <Execute />
+    <Tasks>
+      <Task choice="ScanDataFile">
+        <Name>ScanDataFile</Name>
+        <Disabled>1</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <DataFileSpecKey>ImportBlueCrossSchedule</DataFileSpecKey>
+        <FilePath>C:\ClientData\PPPSW\Schedules\BlueCrossSchedulesZD9738.csv</FilePath>
+        <TableName>ImportBlueCrossSchedule</TableName>
+        <RowTerminator choice="Newline" />
+        <ColumnSeparator choice="Comma" />
+        <TextQualified>1</TextQualified>
+        <MaxRowSize>1000</MaxRowSize>
+        <HasHeader>1</HasHeader>
+        <MaxInvalidRows>0</MaxInvalidRows>
+      </Task>
+      <Task choice="LoadDataFile">
+        <Name>LoadDataFile</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <DataFileSpec>ImportBlueCrossSchedule</DataFileSpec>
+        <FilePath>C:\ClientData\PPPSW\Schedules\BlueCrossSchedulesZD9738.csv</FilePath>
+        <ImportMode choice="Append" />
+        <MaxInvalidRows>0</MaxInvalidRows>
+      </Task>
+    </Tasks>
+  </Job>
+</metadata>

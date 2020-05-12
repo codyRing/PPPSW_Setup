@@ -1,14 +1,14 @@
-USE [PPPSW_ProdMirror]
+use [PPPSW_Contract]
 GO
 
-ALTER TABLE [dbo].[ImportUnitedHealthCareSchedule] DROP CONSTRAINT [DF__ImportUni__RowDa__420DC656]
+ALTER TABLE [dbo].[ImportUnitedHealthCareSchedule] DROP CONSTRAINT [DF__ImportUni__RowDa__4AA30C57]
 GO
 
-/****** Object:  Table [dbo].[ImportUnitedHealthCareSchedule]    Script Date: 5/11/2020 5:54:44 PM ******/
+/****** Object:  Table [dbo].[ImportUnitedHealthCareSchedule]    Script Date: 5/11/2020 6:30:42 PM ******/
 DROP TABLE [dbo].[ImportUnitedHealthCareSchedule]
 GO
 
-/****** Object:  Table [dbo].[ImportUnitedHealthCareSchedule]    Script Date: 5/11/2020 5:54:44 PM ******/
+/****** Object:  Table [dbo].[ImportUnitedHealthCareSchedule]    Script Date: 5/11/2020 6:30:42 PM ******/
 SET ANSI_NULLS ON
 GO
 

@@ -1,0 +1,60 @@
+<metadata>
+  <DataFileSpec>
+    <Key>ImportBlueCrossSchedule</Key>
+    <Description null="yes" />
+    <CreatedBy>system</CreatedBy>
+    <CreatedOn>5/12/2020 6:09:36 PM</CreatedOn>
+    <UpdatedBy>crissler</UpdatedBy>
+    <UpdatedOn>5/12/2020 6:11:44 PM</UpdatedOn>
+    <TableName>ImportBlueCrossSchedule</TableName>
+    <Columns>
+      <ColumnSpec>
+        <Name>Fname</Name>
+        <Type choice="String" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>Area</Name>
+        <Type choice="Integer" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>Code</Name>
+        <Type choice="String" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>GlobalComponent</Name>
+        <Type choice="String" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>ProfessionalComponent</Name>
+        <Type choice="Measure" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>TechincalComponent</Name>
+        <Type choice="Measure" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>FacilityComponent</Name>
+        <Type choice="Measure" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+    </Columns>
+    <RowTerminator choice="Newline" />
+    <ColumnSeparator choice="Comma" />
+    <TextQualified>1</TextQualified>
+    <MaxRowSize>1000</MaxRowSize>
+    <HasHeader>1</HasHeader>
+  </DataFileSpec>
+</metadata>

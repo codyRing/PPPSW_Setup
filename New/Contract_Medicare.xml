@@ -1,0 +1,14 @@
+<metadata>
+  <Contract>
+    <Key>Medicare</Key>
+    <Description>This probably won't get used but want to a a version of medicare set up since we already have some jobs to load Medicare schedules since several of the contracts are based off of those scheduels.</Description>
+    <CreatedBy>crissler</CreatedBy>
+    <CreatedOn>5/12/2020 3:34:51 PM</CreatedOn>
+    <UpdatedBy>crissler</UpdatedBy>
+    <UpdatedOn>5/12/2020 3:36:33 PM</UpdatedOn>
+    <Insurance>Medicare</Insurance>
+    <StartEffectiveDate>2019-01-01</StartEffectiveDate>
+    <EndEffectiveDate>2020-12-31</EndEffectiveDate>
+    <RelatedDocuments />
+  </Contract>
+</metadata>

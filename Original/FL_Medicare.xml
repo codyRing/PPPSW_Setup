@@ -1,0 +1,98 @@
+<metadata>
+  <FeeLogic>
+    <Key>Medicare</Key>
+    <Description>
+    </Description>
+    <CreatedBy>system</CreatedBy>
+    <CreatedOn>2/15/2012 8:32:40 PM</CreatedOn>
+    <UpdatedBy>cwebster</UpdatedBy>
+    <UpdatedOn>5/7/2020 12:18:14 PM</UpdatedOn>
+    <BaseCalculations>
+      <Calculation choice="PercentOfFees">
+        <Name>Medicare Clinic RVU Rates</Name>
+        <ScheduleType>Medicare-RVU-Clinic</ScheduleType>
+        <Percentage>100</Percentage>
+        <CustomDescription null="yes" />
+        <Filters />
+        <SupersededBy />
+      </Calculation>
+      <Calculation choice="PercentOfFees">
+        <Name>Medicare Drug Rates</Name>
+        <ScheduleType>Medicare-Drug</ScheduleType>
+        <Percentage>100</Percentage>
+        <CustomDescription null="yes" />
+        <Filters />
+        <SupersededBy />
+      </Calculation>
+      <Calculation choice="PercentOfFees">
+        <Name>Medicare Lab Rates</Name>
+        <ScheduleType>Medicare-Lab</ScheduleType>
+        <Percentage>100</Percentage>
+        <CustomDescription null="yes" />
+        <Filters />
+        <SupersededBy />
+      </Calculation>
+      <Calculation choice="PercentOfFees">
+        <Name>Medicare $0 Payment Policies</Name>
+        <ScheduleType>Payment-Exceptions</ScheduleType>
+        <Percentage>0</Percentage>
+        <CustomDescription null="yes" />
+        <Filters />
+        <SupersededBy />
+      </Calculation>
+    </BaseCalculations>
+    <AdjustmentCalculations>
+      <Calculation choice="MultipleEndoscopyAdjustment">
+        <Name>Multiple Endoscopy Adjustment</Name>
+        <ScheduleType>Endoscopy-Base</ScheduleType>
+        <SortBy choice="AmountAllowed" />
+        <CustomDescription null="yes" />
+        <Filters />
+        <SupersededBy />
+      </Calculation>
+      <Calculation choice="MultipleProcedureAdjustment">
+        <Name>Multiple Procedure Adjustment</Name>
+        <ScheduleType>Multiple-Procedure</ScheduleType>
+        <SortBy choice="AmountAllowed" />
+        <BaseCodes>
+          <Member>2</Member>
+        </BaseCodes>
+        <Percentages>
+          <Percentage>100</Percentage>
+          <Percentage>50</Percentage>
+        </Percentages>
+        <ExclusionCodes />
+        <CustomDescription null="yes" />
+        <Filters />
+        <SupersededBy />
+      </Calculation>
+      <Calculation choice="MultipleRadiologyAdjustment">
+        <Name>Multiple Radiology Adjustment</Name>
+        <ScheduleType>Multiple-Procedure</ScheduleType>
+        <ModifierDimension>Modifier</ModifierDimension>
+        <SortBy choice="AmountAllowed" />
+        <CustomDescription null="yes" />
+        <Filters />
+        <SupersededBy />
+      </Calculation>
+      <Calculation choice="ModifierAdjustment">
+        <Name>Modifier 50 Adjustment</Name>
+        <ModifierDimension>Modifier</ModifierDimension>
+        <Modifier>50</Modifier>
+        <Percentage>150</Percentage>
+        <CustomDescription null="yes" />
+        <Filters />
+        <SupersededBy />
+      </Calculation>
+      <Calculation choice="LesserOfAdjustment">
+        <Name>Reduced to 100% of Billed Charges</Name>
+        <Percentage>100</Percentage>
+        <AdjustCharges>1</AdjustCharges>
+        <CustomDescription null="yes" />
+        <Filters />
+        <SupersededBy />
+      </Calculation>
+    </AdjustmentCalculations>
+    <AutoExtend>1</AutoExtend>
+  </FeeLogic>
+</metadata>

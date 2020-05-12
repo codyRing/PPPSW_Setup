@@ -1,0 +1,37 @@
+<metadata>
+  <Job>
+    <Key>Load-UnitedHealthCare-Fees</Key>
+    <Description null="yes" />
+    <CreatedBy>crissler</CreatedBy>
+    <CreatedOn>5/11/2020 6:05:02 PM</CreatedOn>
+    <UpdatedBy>crissler</UpdatedBy>
+    <UpdatedOn>5/11/2020 6:25:28 PM</UpdatedOn>
+    <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
+    <Execute />
+    <Tasks>
+      <Task choice="ScanDataFile">
+        <Name>ScanDataFile</Name>
+        <Disabled>1</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <DataFileSpecKey>ImportUnitedHealthCareSchedule</DataFileSpecKey>
+        <FilePath>C:\ClientData\PPPSW\Schedules\UnitedSchedulesZD9509.csv</FilePath>
+        <TableName>ImportUnitedHealthCareSchedule</TableName>
+        <RowTerminator choice="Newline" />
+        <ColumnSeparator choice="Comma" />
+        <TextQualified>1</TextQualified>
+        <MaxRowSize>1000</MaxRowSize>
+        <HasHeader>1</HasHeader>
+        <MaxInvalidRows>0</MaxInvalidRows>
+      </Task>
+      <Task choice="LoadDataFile">
+        <Name>Load UnitedHealthCare Schedules</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <DataFileSpec>ImportUnitedHealthCareSchedule</DataFileSpec>
+        <FilePath>C:\ClientData\PPPSW\Schedules\UnitedSchedulesZD9509.csv</FilePath>
+        <ImportMode choice="Append" />
+        <MaxInvalidRows>0</MaxInvalidRows>
+      </Task>
+    </Tasks>
+  </Job>
+</metadata>

@@ -1,0 +1,83 @@
+<metadata>
+  <Job>
+    <Key>Load-Molina-Schedules</Key>
+    <Description null="yes" />
+    <CreatedBy>cwebster</CreatedBy>
+    <CreatedOn>5/7/2020 12:18:39 PM</CreatedOn>
+    <UpdatedBy>cwebster</UpdatedBy>
+    <UpdatedOn>5/7/2020 12:29:57 PM</UpdatedOn>
+    <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
+    <Execute />
+    <Tasks>
+      <Task choice="ExecuteSql">
+        <Name>ContractMap</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>begin
+
+declare @insurance varchar(100) = 'Molina'
+
+delete from ContractMap
+where insurance = @insurance
+
+insert into ContractMap
+  (
+  [Contract]
+  ,FeeLogic
+  ,BillType
+  ,Facility
+  ,Insurance
+  ,StartEffectiveDate
+  ,EndEffectiveDate
+  )
+select 
+  [Contract] = @insurance
+  ,FeeLogic = @insurance
+  ,BillType = BillType.[Key]
+  ,Facility = Facility.[Key]
+  ,Insurance = @insurance
+  ,StartEffectiveDate = '1/1/2019'
+  ,EndEffectiveDate = '12/31/2999'
+from Facility, BillType
+
+end</Sql>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>Copy All Medicare Schedules</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>begin
+
+delete from ScheduleMap
+where Insurance = 'Molina'
+and ScheduleType in
+  (
+  select distinct ScheduleType
+  from ScheduleMap
+  where Insurance = 'Medicare'
+  )
+
+insert into ScheduleMap
+  (
+  Schedule
+  ,ScheduleType
+  ,Facility
+  ,Insurance
+  ,StartEffectiveDate
+  ,EndEffectiveDate
+  )
+select
+  Schedule
+  ,ScheduleType
+  ,Facility
+  ,Insurance = 'Molina'
+  ,StartEffectiveDate
+  ,EndEffectiveDate
+from ScheduleMap
+where Insurance = 'Medicare'
+
+end</Sql>
+      </Task>
+    </Tasks>
+  </Job>
+</metadata>

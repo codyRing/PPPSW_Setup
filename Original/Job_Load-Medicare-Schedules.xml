@@ -1,0 +1,605 @@
+<metadata>
+  <Job>
+    <Key>Load-Medicare-Schedules</Key>
+    <Description null="yes" />
+    <CreatedBy>system</CreatedBy>
+    <CreatedOn>8/7/2018 3:54:53 PM</CreatedOn>
+    <UpdatedBy>cwebster</UpdatedBy>
+    <UpdatedOn>5/7/2020 12:20:35 PM</UpdatedOn>
+    <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
+    <Execute />
+    <Tasks>
+      <Task choice="ExecuteSql">
+        <Name>ContractMap</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>begin
+
+declare @insurance varchar(100) = 'Medicare'
+
+delete from ContractMap
+where insurance = @insurance
+
+insert into ContractMap
+  (
+  [Contract]
+  ,FeeLogic
+  ,BillType
+  ,Facility
+  ,Insurance
+  ,StartEffectiveDate
+  ,EndEffectiveDate
+  )
+select 
+  [Contract] = @insurance
+  ,FeeLogic = @insurance
+  ,BillType = BillType.[Key]
+  ,Facility = Facility.[Key]
+  ,Insurance = @insurance
+  ,StartEffectiveDate = '1/1/2019'
+  ,EndEffectiveDate = '12/31/2999'
+from Facility, BillType
+
+end</Sql>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>RVU Schedules</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>begin
+
+delete from FeeScheduleRecord
+where Schedule in 
+  (
+  select Schedule
+  from ScheduleMap
+  where insurance = 'Medicare'
+  and ScheduleType like 'Medicare-RVU%'
+  )
+
+/* All Schedules */
+insert into FeeScheduleRecord
+  (
+  Schedule
+  ,Member
+  ,[Filter]
+  ,[Priority]
+  ,Amount
+  )
+select distinct
+  Schedule = left(mrsm.Schedule, 50)
+  ,Member = ct.ChargeTypeID
+  ,[Filter] = mrs.[Filter]
+  ,[Priority] = mrs.[Priority]
+  ,Amount = cast(mrs.RVUAmount * mrs.ConversionFactor as decimaL(12, 2))
+from CommonData..MedicareRVUSchedule mrs
+inner join CommonData..MedicareRVUScheduleMap mrsm
+  on mrs.Schedule = mrsm.Schedule
+  and mrs.ValueType = mrsm.ValueType
+inner join CommonData..MedicareZipCodeMap zip
+  on zip.LocalityCode = mrsm.LocalityCode
+  and zip.Carrier = mrsm.Carrier
+  and mrsm.StartDate between zip.StartDate and zip.EndDate
+inner join Facility
+  on zip.ZipCode = Facility.ZipCode
+  and mrsm.FacilityType = Facility.FacilityType
+inner join ChargeType ct
+  on mrs.ProcedureCode = dbo.ExtractCode(ct.Codes, 'PC')
+where mrsm.ValueType = 'Transitioned'
+and mrsm.StartDate &gt;= '1/1/2019'
+and mrs.RVUAmount != 0
+
+delete from ScheduleMap
+where insurance = 'Medicare'
+and ScheduleType like 'Medicare-RVU%'
+
+/* All Schedules */
+insert into ScheduleMap
+  (
+  Schedule
+  ,ScheduleType
+  ,Facility
+  ,Insurance
+  ,StartEffectiveDate
+  ,EndEffectiveDate
+  )
+select 
+  Schedule = left(mrsm.Schedule, 50)
+  ,ScheduleType = mrsm.ScheduleType + '-' + mrsm.FacilityType
+  ,Facility = F.[Key]
+  ,Insurance = 'Medicare'
+  ,StartDate = mrsm.StartDate
+  ,EndDate = mrsm.EndDate
+from CommonData..MedicareRVUScheduleMap mrsm
+inner join CommonData..MedicareZipCodeMap zip
+  on zip.LocalityCode = mrsm.LocalityCode
+  and zip.Carrier = mrsm.Carrier
+  and mrsm.StartDate between zip.StartDate and zip.EndDate
+inner join Facility F
+  on zip.ZipCode = F.ZipCode
+  and mrsm.FacilityType = F.FacilityType
+where mrsm.ValueType = 'Transitioned'
+and mrsm.StartDate &gt;= '1/1/2019'
+
+end</Sql>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>Lab Schedules</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>begin
+
+delete from FeeScheduleRecord
+where Schedule in 
+  (
+  select Schedule
+  from ScheduleMap
+  where insurance = 'Medicare'
+  and ScheduleType = 'Medicare-Lab'
+  )
+
+/* All Schedules */
+insert into FeeScheduleRecord
+  (
+  Schedule
+  ,Member
+  ,[Filter]
+  ,[Priority]
+  ,Amount
+  )
+select distinct
+  Schedule = mlsm.Schedule,
+  Member = ct.ChargeTypeID,
+  [Filter] = mls.[Filter],
+  [Priority] = mls.[Priority],
+  Amount = cast(mls.Amount as decimaL(12, 2))
+from CommonData..MedicareLabSchedule mls
+inner join CommonData..MedicareLabScheduleMap mlsm
+  on mls.Schedule = mlsm.Schedule
+inner join ChargeType ct
+  on mls.ProcedureCode = dbo.ExtractCode(ct.Codes, 'PC')
+where mlsm.StartDate &gt;= '1/1/2019'
+
+delete from ScheduleMap
+where insurance = 'Medicare'
+and ScheduleType = 'Medicare-Lab'
+
+/* All Schedules */
+insert into ScheduleMap
+  (
+  Schedule
+  ,ScheduleType
+  ,Facility
+  ,Insurance
+  ,StartEffectiveDate
+  ,EndEffectiveDate
+  )
+select 
+  Schedule = mlsm.Schedule,
+  ScheduleType = mlsm.ScheduleType,
+  Facility = F.[Key],
+  Insurance = 'Medicare',
+  StartDate = mlsm.StartDate,
+  EndDate = mlsm.EndDate
+from CommonData..MedicareLabScheduleMap mlsm
+cross apply Facility F
+where mlsm.StartDate &gt;= '1/1/2019'
+
+end</Sql>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>DME Schedules</Name>
+        <Disabled>1</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>/* PLANNED PARENTHOOD DOES NOT BILL DME. KEEPING THIS LOAD TASK IN HERE REGARDLESS */
+
+begin
+
+delete from FeeScheduleRecord
+where Schedule in 
+  (
+  select Schedule
+  from ScheduleMap
+  where insurance = 'Medicare'
+  and ScheduleType = 'Medicare-DME'
+  )
+
+/* All Schedules */
+insert into FeeScheduleRecord
+  (
+  Schedule
+  ,Member
+  ,[Filter]
+  ,[Priority]
+  ,Amount
+  )
+select distinct
+  Schedule = mdsm.Schedule,
+  Member = ct.ChargeTypeID,
+  [Filter] = mds.[Filter],
+  [Priority] = mds.[Priority],
+  Amount = cast(mds.Amount as decimaL(12, 2))
+from CommonData..MedicareDMESchedule mds
+inner join CommonData..MedicareDMEScheduleMap mdsm
+  on mds.Schedule = mdsm.Schedule
+inner join ChargeType ct
+  on mds.ProcedureCode = dbo.ExtractCode(ct.Codes, 'PC')
+where mdsm.StartDate &gt;= '1/1/2019'
+and mdsm.StateCode = 'CA'
+
+delete from ScheduleMap
+where insurance = 'Medicare'
+and ScheduleType = 'Medicare-DME'
+
+/* All Schedules */
+insert into ScheduleMap
+  (
+  Schedule
+  ,ScheduleType
+  ,Facility
+  ,Insurance
+  ,StartEffectiveDate
+  ,EndEffectiveDate
+  )
+select 
+  Schedule = mdsm.Schedule,
+  ScheduleType = mdsm.ScheduleType,
+  Facility = F.[Key],
+  Insurance = 'Medicare',
+  StartDate = mdsm.StartDate,
+  EndDate = mdsm.EndDate
+from CommonData..MedicareDMEScheduleMap mdsm
+cross apply Facility F
+where mdsm.StartDate &gt;= '1/1/2019'
+and mdsm.StateCode = 'CA'
+
+end</Sql>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>Drug Schedules</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>begin
+
+delete from FeeScheduleRecord
+where Schedule in 
+  (
+  select Schedule
+  from ScheduleMap
+  where insurance = 'Medicare'
+  and ScheduleType = 'Medicare-Drug'
+  )
+
+/* All Schedules */
+insert into FeeScheduleRecord
+  (
+  Schedule
+  ,Member
+  ,[Filter]
+  ,[Priority]
+  ,Amount
+  )
+select distinct
+  Schedule = mdsm.Schedule,
+  Member = ct.ChargeTypeID,
+  [Filter] = mds.[Filter],
+  [Priority] = mds.[Priority],
+  Amount = cast(mds.Amount as decimaL(12, 2))
+from CommonData..MedicareDrugSchedule mds
+inner join CommonData..MedicareDrugScheduleMap mdsm
+  on mds.Schedule = mdsm.Schedule
+inner join ChargeType ct
+  on mds.ProcedureCode = dbo.ExtractCode(ct.Codes, 'PC')
+where mdsm.StartDate &gt;= '1/1/2019'
+
+delete from ScheduleMap
+where insurance = 'Medicare'
+and ScheduleType = 'Medicare-Drug'
+
+/* All Schedules */
+insert into ScheduleMap
+  (
+  Schedule
+  ,ScheduleType
+  ,Facility
+  ,Insurance
+  ,StartEffectiveDate
+  ,EndEffectiveDate
+  )
+select 
+  Schedule = mdsm.Schedule,
+  ScheduleType = mdsm.ScheduleType,
+  Facility = F.[Key],
+  Insurance = 'Medicare',
+  StartDate = mdsm.StartDate,
+  EndDate = mdsm.EndDate
+from CommonData..MedicareDrugScheduleMap mdsm
+cross apply Facility F
+where mdsm.StartDate &gt;= '1/1/2019'
+
+end</Sql>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>Payment Exceptions Schedules</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>begin
+
+delete from FeeScheduleRecord
+where Schedule in 
+  (
+  select Schedule
+  from ScheduleMap
+  where Insurance = 'Medicare'
+  and ScheduleType = 'Payment-Exceptions'
+  )
+
+/* All Schedules */
+insert into FeeScheduleRecord
+  (
+  Schedule
+  ,Member
+  ,[Filter]
+  ,[Priority]
+  ,Amount
+  )
+select distinct
+  Schedule = left(replace(mrsm.Schedule,'-RVU-','-Payment-Ex-'), 50)
+  ,Member = ct.ChargeTypeID
+  ,[Filter] = mrs.[Filter]
+  ,[Priority] = mrs.[Priority]
+  ,Amount = 0
+from CommonData..MedicareRVUSchedule mrs
+inner join CommonData..MedicareRVUScheduleMap mrsm
+  on mrs.Schedule = mrsm.Schedule
+  and mrs.ValueType = mrsm.ValueType
+inner join CommonData..MedicareZipCodeMap zip
+  on zip.LocalityCode = mrsm.LocalityCode
+  and zip.Carrier = mrsm.Carrier
+  and mrsm.StartDate between zip.StartDate and zip.EndDate
+inner join Facility
+  on zip.ZipCode = Facility.ZipCode
+  and mrsm.FacilityType = Facility.FacilityType
+inner join ChargeType ct
+  on mrs.ProcedureCode = dbo.ExtractCode(ct.Codes, 'PC')
+where mrsm.ValueType = 'Transitioned'
+and mrsm.StartDate &gt;= '1/1/2019'
+and mrs.StatusCode = 'N'
+
+delete from ScheduleMap
+where insurance = 'Medicare'
+and ScheduleType = 'Payment-Exceptions'
+
+/* All Schedules */
+insert into ScheduleMap
+  (
+  Schedule
+  ,ScheduleType
+  ,Facility
+  ,Insurance
+  ,StartEffectiveDate
+  ,EndEffectiveDate
+  )
+select 
+  Schedule = left(replace(mrsm.Schedule,'-RVU-','-Payment-Ex-'), 50)
+  ,ScheduleType = 'Payment-Exceptions'
+  ,Facility = F.[Key]
+  ,Insurance = 'Medicare'
+  ,StartDate = mrsm.StartDate
+  ,EndDate = mrsm.EndDate
+from CommonData..MedicareRVUScheduleMap mrsm
+inner join CommonData..MedicareZipCodeMap zip
+  on zip.LocalityCode = mrsm.LocalityCode
+  and zip.Carrier = mrsm.Carrier
+  and mrsm.StartDate between zip.StartDate and zip.EndDate
+inner join Facility F
+  on zip.ZipCode = F.ZipCode
+  and mrsm.FacilityType = F.FacilityType
+where mrsm.ValueType = 'Transitioned'
+and mrsm.StartDate &gt;= '1/1/2019'
+
+end</Sql>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>Bilateral Surgery Schedules</Name>
+        <Disabled>1</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>begin
+
+delete from CodeScheduleRecord
+where Schedule in (select distinct Schedule from ScheduleMap where ScheduleType = 'Bilateral-Surgery')
+
+insert into CodeScheduleRecord
+
+select s.Schedule,
+c.ChargeTypeID,
+s.AttributeValue
+from CommonData..MedicareBilateralSurgeryschedule s
+inner join SourceChargeType c
+    on s.Procedurecode = c.CPTCode
+where c.BillType = 'Profee'
+and s.Locality = 'Minnesota'
+and s.ValueType = 'Transitioned'
+and s.FacilityType = 'Clinic'
+and s.Schedule in (
+select Schedule
+from CommonData..MedicareBilateralSurgeryscheduleMap m
+where m.Locality = 'Minnesota'
+and m.ValueType = 'Transitioned'
+and StartDate &gt;= '1/1/2017'
+)
+
+delete from ScheduleMap where ScheduleType = 'Bilateral-Surgery' and Insurance = 'Medicare'
+
+insert into ScheduleMap
+
+select m.Schedule,
+m.ScheduleType,
+f.[Key],
+m.Insurance,
+m.StartDate,
+m.EndDate
+from CommonData..MedicareBilateralSurgeryscheduleMap m
+inner join Facility f
+    on f.FacilityType = m.FacilityType
+where m.Locality = 'Minnesota'
+and m.ValueType = 'Transitioned'
+and StartDate &gt;= '1/1/2017'
+
+end</Sql>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>Endoscopy Base Schedules</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>begin
+
+delete from CodeScheduleRecord
+where Schedule in 
+  (
+  select distinct Schedule 
+  from ScheduleMap 
+  where ScheduleType = 'Endoscopy-Base'
+  )
+
+insert into CodeScheduleRecord
+  (
+  Schedule
+  ,Member
+  ,Code
+  )
+select distinct
+  Schedule = left(mesm.Schedule, 50)
+  ,Member = ct.ChargeTypeID
+  ,Code = mes.AttributeValue
+from CommonData..MedicareEndoscopySchedule mes
+inner join CommonData..MedicareEndoscopyScheduleMap mesm
+  on mes.Schedule = mesm.Schedule
+  and mes.ValueType = mesm.ValueType
+  and mes.FacilityType = mesm.FacilityType
+inner join CommonData..MedicareZipCodeMap zip
+  on zip.LocalityCode = mesm.LocalityCode
+  and zip.Carrier = mesm.Carrier
+  and mesm.StartDate between zip.StartDate and zip.EndDate
+inner join Facility
+  on zip.ZipCode = Facility.ZipCode
+  and mesm.FacilityType = Facility.FacilityType
+inner join ChargeType ct
+  on mes.ProcedureCode = dbo.ExtractCode(ct.Codes, 'PC')
+where mesm.ValueType = 'Transitioned'
+and mesm.StartDate &gt;= '1/1/2019'
+
+delete from ScheduleMap 
+where ScheduleType = 'Endoscopy-Base' 
+and Insurance = 'Medicare'
+
+insert into ScheduleMap
+  (
+  Schedule
+  ,ScheduleType
+  ,Facility
+  ,Insurance
+  ,StartEffectiveDate
+  ,EndEffectiveDate
+  )
+select distinct
+  Schedule = left(mesm.Schedule, 50)
+  ,ScheduleType = mesm.ScheduleType
+  ,Facility = F.[Key]
+  ,Insurance = 'Medicare'
+  ,StartEffectiveDate = mesm.StartDate
+  ,EndEffectiveDate = mesm.EndDate
+from CommonData..MedicareEndoscopyScheduleMap mesm
+inner join CommonData..MedicareZipCodeMap zip
+  on zip.LocalityCode = mesm.LocalityCode
+  and zip.Carrier = mesm.Carrier
+  and mesm.StartDate between zip.StartDate and zip.EndDate
+inner join Facility F
+  on zip.ZipCode = F.ZipCode
+  and mesm.FacilityType = F.FacilityType
+where mesm.ValueType = 'Transitioned'
+and mesm.StartDate &gt;= '1/1/2019'
+
+end</Sql>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>Multiple Procedure Schedules</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>begin
+
+delete from CodeScheduleRecord
+where Schedule in 
+(
+select distinct Schedule 
+from ScheduleMap 
+where ScheduleType = 'Multiple-Procedure'
+)
+
+insert into CodeScheduleRecord
+  (
+  Schedule
+  ,Member
+  ,Code
+  )
+select distinct
+  Schedule = s.Schedule
+  ,Member = ct.ChargeTypeID
+  ,Code = s.AttributeValue
+from CommonData..MedicareMultipleProcedureSchedule s
+inner join CommonData..MedicareMultipleProcedureScheduleMap sm
+  on s.Schedule = sm.Schedule
+  and s.ValueType = sm.ValueType
+  and s.FacilityType = sm.FacilityType
+inner join ChargeType ct
+  on s.Procedurecode = dbo.ExtractCode(ct.Codes,'PC')
+inner join Facility f
+  on s.FacilityType = f.FacilityType
+  --Only one Locality ('National') in this table, so no need to join to zip code map
+where s.ValueType = 'Transitioned'
+and sm.StartDate &gt;= '1/1/2019'
+
+delete from ScheduleMap 
+where ScheduleType = 'Multiple-Procedure'
+
+insert into ScheduleMap
+  (
+  Schedule
+  ,ScheduleType
+  ,Facility
+  ,Insurance
+  ,StartEffectiveDate
+  ,EndEffectiveDate
+  )
+select 
+  Schedule = sm.Schedule
+  ,ScheduleType = sm.ScheduleType
+  ,Facility = f.[Key]
+  ,Insurance = 'Medicare'
+  ,StartEffectiveDate = sm.StartDate
+  ,EndEffectiveDate = sm.EndDate
+from CommonData..MedicareMultipleProcedureScheduleMap sm
+inner join Facility f
+  on f.FacilityType = sm.FacilityType
+  --Only one Locality ('National') in this table, so no need to join to zip code map
+where sm.startdate &gt;= '1/1/2019'
+and sm.ValueType = 'Transitioned'
+
+end</Sql>
+      </Task>
+      <Task choice="LoadEntitiesFromQuery">
+        <Name>Load Schedule Entities</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <EntityType>Schedule</EntityType>
+        <Query>select distinct 
+Schedule as [Key], 
+ScheduleType 
+from ScheduleMap
+where Insurance = 'Medicare'</Query>
+        <KeyPrefix>
+        </KeyPrefix>
+      </Task>
+    </Tasks>
+  </Job>
+</metadata>

@@ -1,0 +1,72 @@
+<metadata>
+  <DataFileSpec>
+    <Key>ImportUnitedHealthCareSchedule</Key>
+    <Description null="yes" />
+    <CreatedBy>system</CreatedBy>
+    <CreatedOn>5/11/2020 6:23:28 PM</CreatedOn>
+    <UpdatedBy>crissler</UpdatedBy>
+    <UpdatedOn>5/11/2020 6:24:02 PM</UpdatedOn>
+    <TableName>ImportUnitedHealthCareSchedule</TableName>
+    <Columns>
+      <ColumnSpec>
+        <Name>Fname</Name>
+        <Type choice="String" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>Code</Name>
+        <Type choice="String" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>Modifier</Name>
+        <Type choice="String" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>Remark</Name>
+        <Type choice="String" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>TypeOfService</Name>
+        <Type choice="String" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>PlaceOfService</Name>
+        <Type choice="String" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>Amount</Name>
+        <Type choice="Measure" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>StartDate</Name>
+        <Type choice="DateTime" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>EndDate</Name>
+        <Type choice="DateTime" />
+        <Nullable>1</Nullable>
+        <Width>100</Width>
+      </ColumnSpec>
+    </Columns>
+    <RowTerminator choice="Newline" />
+    <ColumnSeparator choice="Comma" />
+    <TextQualified>1</TextQualified>
+    <MaxRowSize>1000</MaxRowSize>
+    <HasHeader>1</HasHeader>
+  </DataFileSpec>
+</metadata>

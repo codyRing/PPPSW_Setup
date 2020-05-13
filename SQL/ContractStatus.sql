@@ -10,7 +10,7 @@ insurance varchar(50))
 insert into @t ([Ticket],[remark], [Insurance]) values
 ('9711', 'https://app.clickup.com/t/4wc4vy', 'Molina'), 
 ('9509', 'https://app.clickup.com/t/5pgc3k', 'United Healthcare'),
-('9738','','Blue Cross'),
+('9738','https://app.clickup.com/t/6we9y2','Blue Cross'),
 ('9738','','Medicare')
 /*
 ('9509', 'https://app.clickup.com/t/5pgc3k', 'United Healthcare Medi-Cal'),
@@ -20,7 +20,7 @@ insert into @t ([Ticket],[remark], [Insurance]) values
 select 
 t.ticket
 ,t.insurance
---,t.remark
+,t.remark
 ,i.CreatedOn as 'Insurance_Created'
 ,i.UpdatedOn as 'Insurance_Updated'
 ,c.CreatedOn as 'Contract_Created'
@@ -103,36 +103,36 @@ from dbo.FeeLogic fl
 
 
 ----------------------Check Amounts--------------------------------------------------
---Select 
---S_Map.ticket
---,S_Map.insurance
-----,S_Map.remark
---,s_map.Schedule
---,S_map.ScheduleType
---,s_map.StartEffectiveDate
---,S_Map.EndEffectiveDate
---,fee.*
---from FeeScheduleRecord fee
---join(
---select 
---row_number() over (partition by t.insurance,scheduletype order by endeffectivedate desc) as indx,
---t.ticket
---,t.insurance
-----,T.REMARK
---,s.Schedule
---,s.ScheduleType
---,s.StartEffectiveDate
---,s.EndEffectiveDate
+Select 
+S_Map.ticket
+,S_Map.insurance
+--,S_Map.remark
+,s_map.Schedule
+,S_map.ScheduleType
+,s_map.StartEffectiveDate
+,S_Map.EndEffectiveDate
+,fee.*
+from FeeScheduleRecord fee
+join(
+select 
+row_number() over (partition by t.insurance,scheduletype order by endeffectivedate desc) as indx,
+t.ticket
+,t.insurance
+--,T.REMARK
+,s.Schedule
+,s.ScheduleType
+,s.StartEffectiveDate
+,s.EndEffectiveDate
 
---from @t t
---	left join dbo.ScheduleMap s
---		on Case 
---		when t.insurance in (select distinct insurance from ScheduleMap) then t.insurance
---		else 'Charges'
---		End = s.Insurance
---		where EndEffectiveDate >= @servicedate and StartEffectiveDate <= @servicedate
---) S_Map
---	on fee.Schedule = s_map.Schedule
---		where 
---		s_map.indx = 1 and
---		Member like @code
+from @t t
+	left join dbo.ScheduleMap s
+		on Case 
+		when t.insurance in (select distinct insurance from ScheduleMap) then t.insurance
+		else 'Charges'
+		End = s.Insurance
+		where EndEffectiveDate >= @servicedate and StartEffectiveDate <= @servicedate
+) S_Map
+	on fee.Schedule = s_map.Schedule
+		where 
+		s_map.indx = 1 and
+		Member like @code

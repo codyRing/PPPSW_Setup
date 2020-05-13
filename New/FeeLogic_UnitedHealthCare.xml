@@ -1,0 +1,23 @@
+<metadata>
+  <FeeLogic>
+    <Key>United Healthcare</Key>
+    <Description>
+    </Description>
+    <CreatedBy>crissler</CreatedBy>
+    <CreatedOn>5/13/2020 11:33:54 AM</CreatedOn>
+    <UpdatedBy>crissler</UpdatedBy>
+    <UpdatedOn>5/13/2020 12:15:49 PM</UpdatedOn>
+    <BaseCalculations>
+      <Calculation choice="PercentOfFees">
+        <Name>Carrier Provided Schedule</Name>
+        <ScheduleType>Carrier-Fixed</ScheduleType>
+        <Percentage>100</Percentage>
+        <CustomDescription null="yes" />
+        <Filters />
+        <SupersededBy />
+      </Calculation>
+    </BaseCalculations>
+    <AdjustmentCalculations />
+    <AutoExtend>0</AutoExtend>
+  </FeeLogic>
+</metadata>

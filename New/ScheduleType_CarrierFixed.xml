@@ -1,0 +1,15 @@
+<metadata>
+  <ScheduleType>
+    <Key>Carrier-Fixed</Key>
+    <Description>
+    </Description>
+    <CreatedBy>crissler</CreatedBy>
+    <CreatedOn>5/13/2020 11:38:14 AM</CreatedOn>
+    <UpdatedBy>crissler</UpdatedBy>
+    <UpdatedOn>5/13/2020 11:39:48 AM</UpdatedOn>
+    <ChargeCodeDimension>ChargeType</ChargeCodeDimension>
+    <ModifierDimension>Modifier</ModifierDimension>
+    <RecordType choice="FeeScheduleRecord" />
+    <DataQuery>Select * from FeeScheduleRecord</DataQuery>
+  </ScheduleType>
+</metadata>

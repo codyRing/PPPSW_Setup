@@ -5,7 +5,7 @@
     <CreatedBy>crissler</CreatedBy>
     <CreatedOn>5/11/2020 6:05:02 PM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/11/2020 6:25:28 PM</UpdatedOn>
+    <UpdatedOn>5/13/2020 12:10:29 PM</UpdatedOn>
     <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
     <Execute />
     <Tasks>
@@ -25,12 +25,130 @@
       </Task>
       <Task choice="LoadDataFile">
         <Name>Load UnitedHealthCare Schedules</Name>
-        <Disabled>0</Disabled>
+        <Disabled>1</Disabled>
         <ContinueOnError>0</ContinueOnError>
         <DataFileSpec>ImportUnitedHealthCareSchedule</DataFileSpec>
         <FilePath>C:\ClientData\PPPSW\Schedules\UnitedSchedulesZD9509.csv</FilePath>
         <ImportMode choice="Append" />
         <MaxInvalidRows>0</MaxInvalidRows>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>Populate ContractMap</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>DECLARE @Entity TABLE (Entity VARCHAR(50)
+                        ,StartDate date
+                        ,EndDate date)
+
+INSERT INTO @Entity (Entity,StartDate,EndDate)
+VALUES ('United Healthcare','2019-01-01','2999-12-31')
+    
+
+
+DELETE CM
+FROM dbo.ContractMap CM
+JOIN @Entity e ON CM.Insurance = e.Entity
+
+INSERT INTO dbo.ContractMap (
+    [contract]
+    ,FeeLogic
+    ,BillType
+    ,Facility
+    ,Insurance
+    ,StartEffectiveDate
+    ,EndEffectiveDate
+    )
+SELECT [contract] = e.Entity
+    ,FeeLogic = e.Entity
+    ,BillType = BillType.[key]
+    ,Facility = Facility.[Key]
+    ,Insurance = e.Entity
+    ,Starteffectivedate = e.StartDate
+    ,EndEffectiveDate = e.EndDate
+FROM @Entity e
+    ,Facility
+    ,BillType</Sql>
+      </Task>
+      <Task choice="LoadSchedule">
+        <Name>Load United Fixed Schedule</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Schedule>UnitedHealthCare-Fixed-Profee</Schedule>
+        <ScheduleType>Carrier-Fixed</ScheduleType>
+        <Parameters>
+          <Parameter>
+            <Key>Insurance</Key>
+            <Value>United Healthcare</Value>
+            <Literalize>1</Literalize>
+          </Parameter>
+          <Parameter>
+            <Key>StartDate</Key>
+            <Value>2019-01-01</Value>
+            <Literalize>1</Literalize>
+          </Parameter>
+          <Parameter>
+            <Key>EndDate</Key>
+            <Value>2999-12-31</Value>
+            <Literalize>1</Literalize>
+          </Parameter>
+        </Parameters>
+        <Description>
+        </Description>
+        <FeeRecordSql>--------------------------------------------ScheduleMap Record Load--------------------------------- 
+DELETE s
+FROM ScheduleMap s
+WHERE [Schedule] = {Schedule}
+    AND ScheduleType = {ScheduleType}
+    AND insurance = {Insurance}
+
+INSERT INTO ScheduleMap (
+    Schedule
+    ,ScheduleType
+    ,Facility
+    ,Insurance
+    ,StartEffectiveDate
+    ,EndEffectiveDate
+    )
+    
+SELECT 
+    Schedule = {Schedule}
+    ,ScheduleType = {ScheduleType}
+    ,Facility = facility.[Key]
+    ,Insurance = Insurance.[key]
+    ,StartEffectiveDate = {StartDate}
+    ,EndEffectiveDate = {EndDate}
+FROM Facility
+    ,Insurance
+WHERE Insurance.[Key] = {Insurance}
+
+--------------------------------------------Fee Schedule Record Load--------------------------------- 
+DELETE FSR
+FROM dbo.FeeScheduleRecord fsr
+WHERE fsr.schedule LIKE {Schedule}
+
+INSERT INTO dbo.FeeScheduleRecord (
+    Schedule
+    ,Member
+    ,Filter
+    ,[Priority]
+    ,Amount
+    )
+SELECT 
+    Schedule = {Schedule}
+    ,Member = Code
+    ,Filter = CASE 
+                    WHEN Modifier IS NOT NULL
+                        THEN '%+' + Modifier + '%'
+                    ELSE '%'
+                END
+    ,[Priority] = CASE 
+                    WHEN Modifier IS NOT NULL
+                        THEN 2
+                ELSE 1
+            END
+    ,Amount = Amount
+FROM ImportUnitedHealthCareSchedule AS srce
+WHERE srce.PlaceOfService = 'NonFacility'</FeeRecordSql>
       </Task>
     </Tasks>
   </Job>

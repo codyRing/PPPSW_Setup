@@ -1,0 +1,14 @@
+<metadata>
+  <FeeLogic>
+    <Key>Blue Cross</Key>
+    <Description>
+    </Description>
+    <CreatedBy>crissler</CreatedBy>
+    <CreatedOn>5/13/2020 11:34:24 AM</CreatedOn>
+    <UpdatedBy>crissler</UpdatedBy>
+    <UpdatedOn>5/13/2020 11:34:28 AM</UpdatedOn>
+    <BaseCalculations />
+    <AdjustmentCalculations />
+    <AutoExtend>0</AutoExtend>
+  </FeeLogic>
+</metadata>

@@ -6,8 +6,17 @@
     <CreatedBy>crissler</CreatedBy>
     <CreatedOn>5/13/2020 11:34:24 AM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/13/2020 11:34:28 AM</UpdatedOn>
-    <BaseCalculations />
+    <UpdatedOn>5/13/2020 3:52:38 PM</UpdatedOn>
+    <BaseCalculations>
+      <Calculation choice="PercentOfFees">
+        <Name>Carrier Provided Schedule</Name>
+        <ScheduleType>Carrier-Fixed</ScheduleType>
+        <Percentage>100</Percentage>
+        <CustomDescription null="yes" />
+        <Filters />
+        <SupersededBy />
+      </Calculation>
+    </BaseCalculations>
     <AdjustmentCalculations />
     <AutoExtend>0</AutoExtend>
   </FeeLogic>

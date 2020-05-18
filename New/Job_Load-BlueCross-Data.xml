@@ -1,0 +1,129 @@
+<metadata>
+  <Job>
+    <Key>Load-BlueCross-Data</Key>
+    <Description null="yes" />
+    <CreatedBy>crissler</CreatedBy>
+    <CreatedOn>5/18/2020 12:35:37 PM</CreatedOn>
+    <UpdatedBy>crissler</UpdatedBy>
+    <UpdatedOn>5/18/2020 2:49:17 PM</UpdatedOn>
+    <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
+    <Execute />
+    <Tasks>
+      <Task choice="ScanDataFile">
+        <Name>ScanDataFile</Name>
+        <Disabled>1</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <DataFileSpecKey>ImportBlueCrossSchedule</DataFileSpecKey>
+        <FilePath>C:\ClientData\PPPSW\Schedules\BlueCrossSchedulesZD9738.csv</FilePath>
+        <TableName>ImportBlueCrossSchedule</TableName>
+        <RowTerminator choice="Newline" />
+        <ColumnSeparator choice="Comma" />
+        <TextQualified>1</TextQualified>
+        <MaxRowSize>1000</MaxRowSize>
+        <HasHeader>1</HasHeader>
+        <MaxInvalidRows>0</MaxInvalidRows>
+      </Task>
+      <Task choice="LoadDataFile">
+        <Name>LoadDataFile</Name>
+        <Disabled>1</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <DataFileSpec>ImportBlueCrossSchedule</DataFileSpec>
+        <FilePath>C:\ClientData\PPPSW\Schedules\BlueCrossSchedulesZD9738.csv</FilePath>
+        <ImportMode choice="Append" />
+        <MaxInvalidRows>0</MaxInvalidRows>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>Load-TransformTable</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>INSERT INTO dbo.transformbluecrossschedule (
+    area
+    ,code
+    ,modifier
+    ,PlaceOfService
+    ,amount
+    )
+SELECT area
+    ,code
+    ,CASE 
+        WHEN Modifier LIKE 'GlobalComponent'
+            THEN NULL
+        WHEN Modifier LIKE 'ProfessionalComponent'
+            THEN '26'
+        WHEN Modifier LIKE 'TechincalComponent'
+            THEN 'TC'
+        WHEN Modifier LIKE 'FacilityComponent'
+            THEN NULL
+        END AS modifier
+    ,CASE 
+        WHEN Modifier IN (
+                'GlobalComponent'
+                ,'ProfessionalComponent'
+                ,'TechincalComponent'
+                )
+            THEN 'Clinic'
+        WHEN Modifier LIKE 'FacilityComponent'
+            THEN 'Hospital'
+        END AS PlaceOfService
+    ,Amount
+FROM ImportBlueCrossSchedule i
+unpivot(Amount FOR Modifier IN (
+            GlobalComponent
+            ,ProfessionalComponent
+            ,TechincalComponent
+            ,FacilityComponent
+            )) unpiv;
+            
+            
+            
+    --Keep the most recent record
+    
+
+WITH cte
+AS (
+    SELECT indx = row_number() OVER (
+            PARTITION BY area
+            ,code
+            ,placeofservice
+            ,modifier ORDER BY rowDate DESC
+            )
+        ,*
+    FROM transformbluecrossschedule
+    )
+DELETE
+FROM cte
+WHERE indx &gt; 1</Sql>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>Load-SourceScheduleData</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>INSERT INTO dbo.sourcescheduledata (
+    code
+    ,Modifier
+    ,PlaceOfService
+    ,Amount
+    ,StartDate
+    ,EndDate
+    ,Area
+    ,ScheduleName
+    ,RecordID
+    )
+SELECT i.code
+    ,i.modifier
+    ,i.PlaceOfService
+    ,i.Amount
+    ,StartDate = '2019-01-01'
+    ,EndDate = '2999-12-31'
+    ,i.Area
+    ,ScheduleName = 'BlueCross-Fixed-Clinic-Area' + i.area
+    ,i.RecordID
+FROM dbo.TransformBlueCrossSchedule i
+LEFT JOIN dbo.SourceScheduleData s
+    ON i.RecordID = s.RecordID
+WHERE s.RecordID IS NULL
+    AND i.PlaceOfService LIKE 'Clinic'</Sql>
+      </Task>
+    </Tasks>
+  </Job>
+</metadata>

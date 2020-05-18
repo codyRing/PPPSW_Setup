@@ -5,33 +5,10 @@
     <CreatedBy>crissler</CreatedBy>
     <CreatedOn>5/12/2020 6:03:59 PM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/13/2020 3:48:14 PM</UpdatedOn>
+    <UpdatedOn>5/18/2020 12:36:30 PM</UpdatedOn>
     <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
     <Execute />
     <Tasks>
-      <Task choice="ScanDataFile">
-        <Name>ScanDataFile</Name>
-        <Disabled>1</Disabled>
-        <ContinueOnError>0</ContinueOnError>
-        <DataFileSpecKey>ImportBlueCrossSchedule</DataFileSpecKey>
-        <FilePath>C:\ClientData\PPPSW\Schedules\BlueCrossSchedulesZD9738.csv</FilePath>
-        <TableName>ImportBlueCrossSchedule</TableName>
-        <RowTerminator choice="Newline" />
-        <ColumnSeparator choice="Comma" />
-        <TextQualified>1</TextQualified>
-        <MaxRowSize>1000</MaxRowSize>
-        <HasHeader>1</HasHeader>
-        <MaxInvalidRows>0</MaxInvalidRows>
-      </Task>
-      <Task choice="LoadDataFile">
-        <Name>LoadDataFile</Name>
-        <Disabled>1</Disabled>
-        <ContinueOnError>0</ContinueOnError>
-        <DataFileSpec>ImportBlueCrossSchedule</DataFileSpec>
-        <FilePath>C:\ClientData\PPPSW\Schedules\BlueCrossSchedulesZD9738.csv</FilePath>
-        <ImportMode choice="Append" />
-        <MaxInvalidRows>0</MaxInvalidRows>
-      </Task>
       <Task choice="ExecuteSql">
         <Name>Populate ContractMap</Name>
         <Disabled>0</Disabled>

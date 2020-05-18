@@ -5,7 +5,7 @@
     <CreatedBy>crissler</CreatedBy>
     <CreatedOn>5/18/2020 12:35:37 PM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/18/2020 2:49:17 PM</UpdatedOn>
+    <UpdatedOn>5/18/2020 4:36:44 PM</UpdatedOn>
     <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
     <Execute />
     <Tasks>
@@ -25,24 +25,18 @@
       </Task>
       <Task choice="LoadDataFile">
         <Name>LoadDataFile</Name>
-        <Disabled>1</Disabled>
+        <Disabled>0</Disabled>
         <ContinueOnError>0</ContinueOnError>
         <DataFileSpec>ImportBlueCrossSchedule</DataFileSpec>
         <FilePath>C:\ClientData\PPPSW\Schedules\BlueCrossSchedulesZD9738.csv</FilePath>
-        <ImportMode choice="Append" />
+        <ImportMode choice="Replace" />
         <MaxInvalidRows>0</MaxInvalidRows>
       </Task>
       <Task choice="ExecuteSql">
         <Name>Load-TransformTable</Name>
         <Disabled>0</Disabled>
         <ContinueOnError>0</ContinueOnError>
-        <Sql>INSERT INTO dbo.transformbluecrossschedule (
-    area
-    ,code
-    ,modifier
-    ,PlaceOfService
-    ,amount
-    )
+        <Sql>;With i as(
 SELECT area
     ,code
     ,CASE 
@@ -72,27 +66,50 @@ unpivot(Amount FOR Modifier IN (
             ,ProfessionalComponent
             ,TechincalComponent
             ,FacilityComponent
-            )) unpiv;
-            
-            
-            
-    --Keep the most recent record
-    
-
-WITH cte
-AS (
-    SELECT indx = row_number() OVER (
-            PARTITION BY area
-            ,code
-            ,placeofservice
-            ,modifier ORDER BY rowDate DESC
+            )) unpiv
             )
-        ,*
-    FROM transformbluecrossschedule
-    )
-DELETE
-FROM cte
-WHERE indx &gt; 1</Sql>
+Insert into dbo.[TransformBlueCrossSchedule](
+[Area]
+,[Code]
+,[Amount]
+,[PlaceOfService]
+,[Modifier])
+
+Select
+i.[Area]
+,i.[Code]
+,i.[Amount]
+,i.[PlaceOfService]
+,i.[Modifier]
+
+
+
+    from i
+        left join dbo.[TransformBlueCrossSchedule] t
+            on 
+             i.Area = t.Area and
+            isnull( i.modifier,1) = isnull(t.modifier,1) and
+            i.PlaceOfService = t.PlaceOfService and
+            i.Amount = t.Amount
+ where t.RecordID is null
+
+
+    
+-------------Don't need delete
+-- WITH cte
+-- AS (
+    -- SELECT indx = row_number() OVER (
+            -- PARTITION BY area
+            -- ,code
+            -- ,placeofservice
+            -- ,modifier ORDER BY rowDate DESC
+            -- )
+        -- ,*
+    -- FROM transformbluecrossschedule
+    -- )
+-- DELETE
+-- FROM cte
+-- WHERE indx &gt; 1</Sql>
       </Task>
       <Task choice="ExecuteSql">
         <Name>Load-SourceScheduleData</Name>
@@ -121,8 +138,7 @@ SELECT i.code
 FROM dbo.TransformBlueCrossSchedule i
 LEFT JOIN dbo.SourceScheduleData s
     ON i.RecordID = s.RecordID
-WHERE s.RecordID IS NULL
-    AND i.PlaceOfService LIKE 'Clinic'</Sql>
+WHERE s.RecordID IS NULL</Sql>
       </Task>
     </Tasks>
   </Job>

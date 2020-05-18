@@ -5,7 +5,7 @@
     <CreatedBy>crissler</CreatedBy>
     <CreatedOn>5/18/2020 11:54:49 AM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/18/2020 12:26:47 PM</UpdatedOn>
+    <UpdatedOn>5/18/2020 3:37:30 PM</UpdatedOn>
     <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
     <Execute />
     <Tasks>
@@ -24,13 +24,49 @@
         <MaxInvalidRows>0</MaxInvalidRows>
       </Task>
       <Task choice="LoadDataFile">
-        <Name>Load UnitedHealthCare Schedules</Name>
-        <Disabled>1</Disabled>
+        <Name>Load UnitedHealthCare Files</Name>
+        <Disabled>0</Disabled>
         <ContinueOnError>0</ContinueOnError>
         <DataFileSpec>ImportUnitedHealthCareSchedule</DataFileSpec>
         <FilePath>C:\ClientData\PPPSW\Schedules\UnitedSchedulesZD9509.csv</FilePath>
-        <ImportMode choice="Append" />
+        <ImportMode choice="Replace" />
         <MaxInvalidRows>0</MaxInvalidRows>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>Load-TransformCarrier</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>INSERT INTO dbo.TransfromUnitedHealthCareSchedule (
+    [Fname]
+    ,[Code]
+    ,[Modifier]
+    ,[Remark]
+    ,[TypeOfService]
+    ,[PlaceOfService]
+    ,[Amount]
+    ,[StartDate]
+    ,[EndDate]
+    )
+SELECT i.[Fname]
+    ,i.[Code]
+    ,i.[Modifier]
+    ,i.[Remark]
+    ,i.[TypeOfService]
+    ,[PlaceOfService] = CASE 
+        WHEN i.PlaceOfService = 'NonFacility'
+            THEN 'Clinic'
+        WHEN i.PlaceOfService = 'Facility'
+            THEN 'Hospital'
+        END
+    ,i.[Amount]
+    ,i.[StartDate]
+    ,i.[EndDate]
+FROM dbo.ImportUnitedHealthCareSchedule i
+LEFT JOIN [dbo].[TransfromUnitedHealthCareSchedule] t
+    ON i.Code = t.code
+        AND isnull(i.Modifier,1) = isnull(t.Modifier,1)
+        AND i.Amount = t.amount
+WHERE t.recordid IS NULL</Sql>
       </Task>
       <Task choice="ExecuteSql">
         <Name>Load SourceScheduleData</Name>
@@ -47,23 +83,18 @@
     ,ScheduleName
     ,RecordID
     )
-SELECT i.code
-    ,i.modifier
-    ,PlaceOfService = CASE 
-        WHEN i.PlaceOfService = 'NonFacility'
-            THEN 'Clinic'
-        WHEN i.PlaceOfService = 'Facility'
-            THEN 'Hospital'
-        END
-    ,i.Amount
-    ,i.StartDate
-    ,i.EndDate
+SELECT t.code
+    ,t.modifier
+    ,t.PlaceOfService 
+    ,t.Amount
+    ,t.StartDate
+    ,t.EndDate
     ,Area = 'All'
     ,ScheduleName = 'UnitedHealthCare-Fixed-Clinic'
-    ,i.RecordID
-FROM dbo.ImportUnitedHealthCareSchedule i
+    ,t.RecordID
+    FROM dbo.TransfromUnitedHealthCareSchedule t
 LEFT JOIN dbo.SourceScheduleData s
-    ON i.RecordID = s.RecordID
+    ON t.RecordID = s.RecordID
 WHERE s.RecordID IS NULL</Sql>
       </Task>
     </Tasks>

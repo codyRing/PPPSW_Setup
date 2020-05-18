@@ -5,7 +5,7 @@
     <CreatedBy>system</CreatedBy>
     <CreatedOn>5/12/2020 6:09:36 PM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/12/2020 6:11:44 PM</UpdatedOn>
+    <UpdatedOn>5/18/2020 4:01:29 PM</UpdatedOn>
     <TableName>ImportBlueCrossSchedule</TableName>
     <Columns>
       <ColumnSpec>
@@ -28,7 +28,7 @@
       </ColumnSpec>
       <ColumnSpec>
         <Name>GlobalComponent</Name>
-        <Type choice="String" />
+        <Type choice="Measure" />
         <Nullable>1</Nullable>
         <Width>100</Width>
       </ColumnSpec>

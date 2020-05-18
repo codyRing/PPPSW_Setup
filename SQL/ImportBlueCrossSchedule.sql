@@ -2,15 +2,15 @@ USE [PPPSW_Contract]
 GO
 
 /****** Object:  Table [dbo].[ImportBlueCrossSchedule]    Script Date: 5/18/2020 2:50:37 PM ******/
-DROP TABLE [dbo].[ImportBlueCrossSchedule]
-GO
+--DROP TABLE [dbo].[ImportBlueCrossSchedule]
+--GO
 
-/****** Object:  Table [dbo].[ImportBlueCrossSchedule]    Script Date: 5/18/2020 2:50:37 PM ******/
-SET ANSI_NULLS ON
-GO
+--/****** Object:  Table [dbo].[ImportBlueCrossSchedule]    Script Date: 5/18/2020 2:50:37 PM ******/
+--SET ANSI_NULLS ON
+--GO
 
-SET QUOTED_IDENTIFIER ON
-GO
+--SET QUOTED_IDENTIFIER ON
+--GO
 
 CREATE TABLE [dbo].[ImportBlueCrossSchedule](
 	[Fname] [varchar](100) NULL,

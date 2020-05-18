@@ -5,7 +5,7 @@
     <CreatedBy>crissler</CreatedBy>
     <CreatedOn>5/12/2020 6:03:59 PM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/18/2020 12:36:30 PM</UpdatedOn>
+    <UpdatedOn>5/18/2020 5:45:20 PM</UpdatedOn>
     <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
     <Execute />
     <Tasks>
@@ -47,11 +47,11 @@ FROM @Entity e
     ,BillType</Sql>
       </Task>
       <Task choice="LoadSchedule">
-        <Name>Blue Cross Fixed Schedule Locality Four</Name>
+        <Name>Blue Cross Fixed Schedule Area 4</Name>
         <Disabled>0</Disabled>
         <ContinueOnError>0</ContinueOnError>
-        <Schedule>BlueCross-Fixed-Profee-LocalityFour</Schedule>
-        <ScheduleType>Carrier-Fixed</ScheduleType>
+        <Schedule>BlueCross-Fixed-Clinic-Area4</Schedule>
+        <ScheduleType>Fixed-Fees</ScheduleType>
         <Parameters>
           <Parameter>
             <Key>Insurance</Key>
@@ -96,8 +96,9 @@ SELECT
 FROM Facility
     ,Insurance
 WHERE 
-    Insurance.[Key] = {Insurance}
-    AND Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
+    Insurance.[Key] = {Insurance}AND
+    Facility.FacilityType = 'Clinic'  and
+    Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
         '92270'
         ,'92236'
         )
@@ -117,28 +118,28 @@ INSERT INTO dbo.FeeScheduleRecord (
 SELECT 
     Schedule = {Schedule}
     ,Member = Code
-    --,Filter = CASE 
-    --                WHEN Modifier IS NOT NULL
-    --                    THEN '%+' + Modifier + '%'
-    --                ELSE '%'
-    --            END
-    ,[Filter] = '%'
-    --,[Priority] = CASE 
-    --                WHEN Modifier IS NOT NULL
-    --                    THEN 2
-    --            ELSE 1
-    --        END
-    ,[Priority] = 1
-    ,Amount = GlobalComponent
-FROM ImportBlueCrossSchedule AS srce
-WHERE srce.area LIKE '4'</FeeRecordSql>
+    ,Filter = CASE 
+                    WHEN Modifier IS NOT NULL
+                        THEN '%+' + Modifier + '%'
+                    ELSE '%'
+                END
+    ,[Priority] = CASE 
+                    WHEN Modifier IS NOT NULL
+                        THEN 2
+                ELSE 1
+            END
+    ,Amount = Amount
+FROM SourceScheduleData AS srce
+WHERE 
+srce.PlaceOfService = 'Clinic' and
+srce.ScheduleName = {Schedule}</FeeRecordSql>
       </Task>
       <Task choice="LoadSchedule">
-        <Name>Blue Cross Fixed Schedule Locality Six</Name>
+        <Name>Blue Cross Fixed Schedule Area 5</Name>
         <Disabled>1</Disabled>
         <ContinueOnError>0</ContinueOnError>
-        <Schedule>BlueCross-Fixed-Profee-LocalitySix</Schedule>
-        <ScheduleType>Carrier-Fixed</ScheduleType>
+        <Schedule>BlueCross-Fixed-Clinic-Area5</Schedule>
+        <ScheduleType>Fixed-Fees</ScheduleType>
         <Parameters>
           <Parameter>
             <Key>Insurance</Key>
@@ -183,11 +184,10 @@ SELECT
 FROM Facility
     ,Insurance
 WHERE 
-    Insurance.[Key] = {Insurance}
-    AND Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
-        '92553'
-        ,'92881'
-		,'92506'
+    Insurance.[Key] = {Insurance}AND
+    Facility.FacilityType = 'Clinic'  and
+    Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
+    ----No area 5 facilities 
         )
 
 --------------------------------------------Fee Schedule Record Load--------------------------------- 
@@ -205,28 +205,28 @@ INSERT INTO dbo.FeeScheduleRecord (
 SELECT 
     Schedule = {Schedule}
     ,Member = Code
-    --,Filter = CASE 
-    --                WHEN Modifier IS NOT NULL
-    --                    THEN '%+' + Modifier + '%'
-    --                ELSE '%'
-    --            END
-    ,[Filter] = '%'
-    --,[Priority] = CASE 
-    --                WHEN Modifier IS NOT NULL
-    --                    THEN 2
-    --            ELSE 1
-    --        END
-    ,[Priority] = 1
-    ,Amount = GlobalComponent
-FROM ImportBlueCrossSchedule AS srce
-WHERE srce.area LIKE '6'</FeeRecordSql>
+    ,Filter = CASE 
+                    WHEN Modifier IS NOT NULL
+                        THEN '%+' + Modifier + '%'
+                    ELSE '%'
+                END
+    ,[Priority] = CASE 
+                    WHEN Modifier IS NOT NULL
+                        THEN 2
+                ELSE 1
+            END
+    ,Amount = Amount
+FROM SourceScheduleData AS srce
+WHERE 
+srce.PlaceOfService = 'Clinic' and
+srce.ScheduleName = {Schedule}</FeeRecordSql>
       </Task>
       <Task choice="LoadSchedule">
-        <Name>Blue Cross Fixed Schedule Locality Seven</Name>
+        <Name>Blue Cross Fixed Schedule Area 6</Name>
         <Disabled>0</Disabled>
         <ContinueOnError>0</ContinueOnError>
-        <Schedule>BlueCross-Fixed-Profee-LocalitySeven</Schedule>
-        <ScheduleType>Carrier-Fixed</ScheduleType>
+        <Schedule>BlueCross-Fixed-Clinic-Area6</Schedule>
+        <ScheduleType>Fixed-Fees</ScheduleType>
         <Parameters>
           <Parameter>
             <Key>Insurance</Key>
@@ -271,21 +271,12 @@ SELECT
 FROM Facility
     ,Insurance
 WHERE 
-    Insurance.[Key] = {Insurance}
-    AND Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
-	'92111'
-	,'91911'
-	,'92109'
-	,'92101'
-	,'92101'
-	,'92101'
-	,'92025'
-	,'92105'
-	,'92081'
-	,'92020'
-	,'92115'
-	,'92126'
-	,'92114'
+    Insurance.[Key] = {Insurance}AND
+    Facility.FacilityType = 'Clinic'  and
+    Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
+    '92553'
+    ,'92881'
+    ,'92506'
         )
 
 --------------------------------------------Fee Schedule Record Load--------------------------------- 
@@ -303,28 +294,28 @@ INSERT INTO dbo.FeeScheduleRecord (
 SELECT 
     Schedule = {Schedule}
     ,Member = Code
-    --,Filter = CASE 
-    --                WHEN Modifier IS NOT NULL
-    --                    THEN '%+' + Modifier + '%'
-    --                ELSE '%'
-    --            END
-    ,[Filter] = '%'
-    --,[Priority] = CASE 
-    --                WHEN Modifier IS NOT NULL
-    --                    THEN 2
-    --            ELSE 1
-    --        END
-    ,[Priority] = 1
-    ,Amount = GlobalComponent
-FROM ImportBlueCrossSchedule AS srce
-WHERE srce.area LIKE '7'</FeeRecordSql>
+    ,Filter = CASE 
+                    WHEN Modifier IS NOT NULL
+                        THEN '%+' + Modifier + '%'
+                    ELSE '%'
+                END
+    ,[Priority] = CASE 
+                    WHEN Modifier IS NOT NULL
+                        THEN 2
+                ELSE 1
+            END
+    ,Amount = Amount
+FROM SourceScheduleData AS srce
+WHERE 
+srce.PlaceOfService = 'Clinic' and
+srce.ScheduleName = {Schedule}</FeeRecordSql>
       </Task>
       <Task choice="LoadSchedule">
-        <Name>Blue Cross Fixed Schedule Locality Nine</Name>
+        <Name>Blue Cross Fixed Schedule Area 7</Name>
         <Disabled>0</Disabled>
         <ContinueOnError>0</ContinueOnError>
-        <Schedule>BlueCross-Fixed-Profee-LocalityNine</Schedule>
-        <ScheduleType>Carrier-Fixed</ScheduleType>
+        <Schedule>BlueCross-Fixed-Clinic-Area7</Schedule>
+        <ScheduleType>Fixed-Fees</ScheduleType>
         <Parameters>
           <Parameter>
             <Key>Insurance</Key>
@@ -369,9 +360,22 @@ SELECT
 FROM Facility
     ,Insurance
 WHERE 
-    Insurance.[Key] = {Insurance}
-    AND Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
-        '92243'
+    Insurance.[Key] = {Insurance}AND
+    Facility.FacilityType = 'Clinic'  and
+    Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
+            '92111'
+            ,'91911'
+            ,'92109'
+            ,'92101'
+            ,'92101'
+            ,'92101'
+            ,'92025'
+            ,'92105'
+            ,'92081'
+            ,'92020'
+            ,'92115'
+            ,'92126'
+            ,'92114'
         )
 
 --------------------------------------------Fee Schedule Record Load--------------------------------- 
@@ -389,21 +393,108 @@ INSERT INTO dbo.FeeScheduleRecord (
 SELECT 
     Schedule = {Schedule}
     ,Member = Code
-    --,Filter = CASE 
-    --                WHEN Modifier IS NOT NULL
-    --                    THEN '%+' + Modifier + '%'
-    --                ELSE '%'
-    --            END
-    ,[Filter] = '%'
-    --,[Priority] = CASE 
-    --                WHEN Modifier IS NOT NULL
-    --                    THEN 2
-    --            ELSE 1
-    --        END
-    ,[Priority] = 1
-    ,Amount = GlobalComponent
-FROM ImportBlueCrossSchedule AS srce
-WHERE srce.area LIKE '9'</FeeRecordSql>
+    ,Filter = CASE 
+                    WHEN Modifier IS NOT NULL
+                        THEN '%+' + Modifier + '%'
+                    ELSE '%'
+                END
+    ,[Priority] = CASE 
+                    WHEN Modifier IS NOT NULL
+                        THEN 2
+                ELSE 1
+            END
+    ,Amount = Amount
+FROM SourceScheduleData AS srce
+WHERE 
+srce.PlaceOfService = 'Clinic' and
+srce.ScheduleName = {Schedule}</FeeRecordSql>
+      </Task>
+      <Task choice="LoadSchedule">
+        <Name>Blue Cross Fixed Schedule Area 9</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Schedule>BlueCross-Fixed-Clinic-Area9</Schedule>
+        <ScheduleType>Fixed-Fees</ScheduleType>
+        <Parameters>
+          <Parameter>
+            <Key>Insurance</Key>
+            <Value>Blue Cross</Value>
+            <Literalize>1</Literalize>
+          </Parameter>
+          <Parameter>
+            <Key>StartDate</Key>
+            <Value>2019-01-01</Value>
+            <Literalize>1</Literalize>
+          </Parameter>
+          <Parameter>
+            <Key>EndDate</Key>
+            <Value>2999-12-31</Value>
+            <Literalize>1</Literalize>
+          </Parameter>
+        </Parameters>
+        <Description>
+        </Description>
+        <FeeRecordSql>--------------------------------------------ScheduleMap Record Load--------------------------------- 
+DELETE s
+FROM ScheduleMap s
+WHERE [Schedule] = {Schedule}
+    AND ScheduleType = {ScheduleType}
+    AND insurance = {Insurance}
+
+INSERT INTO ScheduleMap (
+    Schedule
+    ,ScheduleType
+    ,Facility
+    ,Insurance
+    ,StartEffectiveDate
+    ,EndEffectiveDate
+    )
+SELECT 
+    Schedule = {Schedule}
+    ,ScheduleType = {ScheduleType}
+    ,Facility = facility.[Key]
+    ,Insurance = Insurance.[key]
+    ,StartEffectiveDate = {StartDate}
+    ,EndEffectiveDate = {EndDate}
+FROM Facility
+    ,Insurance
+WHERE 
+    Insurance.[Key] = {Insurance}AND
+    Facility.FacilityType = 'Clinic'  and
+    Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
+    '92243'
+        )
+
+--------------------------------------------Fee Schedule Record Load--------------------------------- 
+DELETE FSR
+FROM dbo.FeeScheduleRecord fsr
+WHERE fsr.schedule LIKE {Schedule}
+
+INSERT INTO dbo.FeeScheduleRecord (
+    Schedule
+    ,Member
+    ,Filter
+    ,[Priority]
+    ,Amount
+    )
+SELECT 
+    Schedule = {Schedule}
+    ,Member = Code
+    ,Filter = CASE 
+                    WHEN Modifier IS NOT NULL
+                        THEN '%+' + Modifier + '%'
+                    ELSE '%'
+                END
+    ,[Priority] = CASE 
+                    WHEN Modifier IS NOT NULL
+                        THEN 2
+                ELSE 1
+            END
+    ,Amount = Amount
+FROM SourceScheduleData AS srce
+WHERE 
+srce.PlaceOfService = 'Clinic' and
+srce.ScheduleName = {Schedule}</FeeRecordSql>
       </Task>
     </Tasks>
   </Job>

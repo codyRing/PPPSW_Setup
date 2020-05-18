@@ -1,15 +1,15 @@
 USE [PPPSW_Contract]
 GO
 
-ALTER TABLE [dbo].[TransformBlueCrossSchedule] DROP CONSTRAINT [DF__Transform__RowDa__3A379A64]
-GO
+--ALTER TABLE [dbo].[TransformBlueCrossSchedule] DROP CONSTRAINT [DF__Transform__RowDa__3A379A64]
+--GO
 
-ALTER TABLE [dbo].[TransformBlueCrossSchedule] DROP CONSTRAINT [DF__Transform__Recor__3943762B]
-GO
+--ALTER TABLE [dbo].[TransformBlueCrossSchedule] DROP CONSTRAINT [DF__Transform__Recor__3943762B]
+--GO
 
-/****** Object:  Table [dbo].[TransformBlueCrossSchedule]    Script Date: 5/18/2020 2:50:11 PM ******/
-DROP TABLE [dbo].[TransformBlueCrossSchedule]
-GO
+--/****** Object:  Table [dbo].[TransformBlueCrossSchedule]    Script Date: 5/18/2020 2:50:11 PM ******/
+--DROP TABLE [dbo].[TransformBlueCrossSchedule]
+--GO
 
 /****** Object:  Table [dbo].[TransformBlueCrossSchedule]    Script Date: 5/18/2020 2:50:11 PM ******/
 SET ANSI_NULLS ON

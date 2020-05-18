@@ -2,12 +2,12 @@ USE [PPPSW_Contract]
 GO
 
 /****** Object:  Table [dbo].[ImportUnitedHealthCareSchedule]    Script Date: 5/18/2020 3:19:34 PM ******/
-DROP TABLE [dbo].[ImportUnitedHealthCareSchedule]
-GO
+--DROP TABLE [dbo].[ImportUnitedHealthCareSchedule]
+--GO
 
-/****** Object:  Table [dbo].[ImportUnitedHealthCareSchedule]    Script Date: 5/18/2020 3:19:34 PM ******/
-SET ANSI_NULLS ON
-GO
+--/****** Object:  Table [dbo].[ImportUnitedHealthCareSchedule]    Script Date: 5/18/2020 3:19:34 PM ******/
+--SET ANSI_NULLS ON
+--GO
 
 SET QUOTED_IDENTIFIER ON
 GO

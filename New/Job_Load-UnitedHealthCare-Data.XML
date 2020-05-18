@@ -1,0 +1,71 @@
+<metadata>
+  <Job>
+    <Key>Load-UnitedHealthCare-Data</Key>
+    <Description null="yes" />
+    <CreatedBy>crissler</CreatedBy>
+    <CreatedOn>5/18/2020 11:54:49 AM</CreatedOn>
+    <UpdatedBy>crissler</UpdatedBy>
+    <UpdatedOn>5/18/2020 12:25:38 PM</UpdatedOn>
+    <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
+    <Execute />
+    <Tasks>
+      <Task choice="ScanDataFile">
+        <Name>ScanDataFile</Name>
+        <Disabled>1</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <DataFileSpecKey>ImportUnitedHealthCareSchedule</DataFileSpecKey>
+        <FilePath>C:\ClientData\PPPSW\Schedules\UnitedSchedulesZD9509.csv</FilePath>
+        <TableName>ImportUnitedHealthCareSchedule</TableName>
+        <RowTerminator choice="Newline" />
+        <ColumnSeparator choice="Comma" />
+        <TextQualified>1</TextQualified>
+        <MaxRowSize>1000</MaxRowSize>
+        <HasHeader>1</HasHeader>
+        <MaxInvalidRows>0</MaxInvalidRows>
+      </Task>
+      <Task choice="LoadDataFile">
+        <Name>Load UnitedHealthCare Schedules</Name>
+        <Disabled>1</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <DataFileSpec>ImportUnitedHealthCareSchedule</DataFileSpec>
+        <FilePath>C:\ClientData\PPPSW\Schedules\UnitedSchedulesZD9509.csv</FilePath>
+        <ImportMode choice="Append" />
+        <MaxInvalidRows>0</MaxInvalidRows>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>Load SourceScheduleData</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>INSERT INTO dbo.sourcescheduledata (
+    code
+    ,Modifier
+    ,PlaceOfService
+    ,Amount
+    ,StartDate
+    ,EndDate
+    ,Area
+    ,ScheduleName
+    ,RecordID
+    )
+SELECT i.code
+    ,i.modifier
+    ,PlaceOfService = CASE 
+        WHEN i.PlaceOfService = 'NonFacility'
+            THEN 'Clinic'
+        WHEN i.PlaceOfService = 'Facility'
+            THEN 'Hospital'
+        END
+    ,i.Amount
+    ,i.StartDate
+    ,i.EndDate
+    ,Area = 'All'
+    ,ScheduleName = 'UnitedHealthCare-Fixed-Clinic'
+    ,i.RecordID
+FROM dbo.ImportUnitedHealthCareSchedule i
+LEFT JOIN dbo.SourceScheduleData s
+    ON i.RecordID = s.RecordID
+WHERE s.RecordID IS NULL</Sql>
+      </Task>
+    </Tasks>
+  </Job>
+</metadata>

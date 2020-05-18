@@ -10,8 +10,8 @@ insurance varchar(50))
 insert into @t ([Ticket],[remark], [Insurance]) values
 ('9711', 'https://app.clickup.com/t/4wc4vy', 'Molina'), 
 ('9509', 'https://app.clickup.com/t/5pgc3k', 'United Healthcare'),
-('9738','https://app.clickup.com/t/6we9y2','Blue Cross'),
-('9738','','Medicare')
+('9738','https://app.clickup.com/t/6we9y2','Blue Cross')
+--('N/A','','Medicare')
 /*
 ('9509', 'https://app.clickup.com/t/5pgc3k', 'United Healthcare Medi-Cal'),
 ('9711', 'https://app.clickup.com/t/4wc4vy', 'Molina Medi-Cal'), 

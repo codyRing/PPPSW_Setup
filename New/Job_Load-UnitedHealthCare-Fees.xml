@@ -5,7 +5,7 @@
     <CreatedBy>crissler</CreatedBy>
     <CreatedOn>5/11/2020 6:05:02 PM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/13/2020 12:10:29 PM</UpdatedOn>
+    <UpdatedOn>5/18/2020 11:27:01 AM</UpdatedOn>
     <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
     <Execute />
     <Tasks>
@@ -73,8 +73,8 @@ FROM @Entity e
         <Name>Load United Fixed Schedule</Name>
         <Disabled>0</Disabled>
         <ContinueOnError>0</ContinueOnError>
-        <Schedule>UnitedHealthCare-Fixed-Profee</Schedule>
-        <ScheduleType>Carrier-Fixed</ScheduleType>
+        <Schedule>UnitedHealthCare-Fixed-Clinic</Schedule>
+        <ScheduleType>Fixed-Fees</ScheduleType>
         <Parameters>
           <Parameter>
             <Key>Insurance</Key>
@@ -119,8 +119,9 @@ SELECT
     ,EndEffectiveDate = {EndDate}
 FROM Facility
     ,Insurance
-WHERE Insurance.[Key] = {Insurance}
-
+WHERE 
+Insurance.[Key] = {Insurance} and
+Facility.FacilityType = 'Clinic'
 --------------------------------------------Fee Schedule Record Load--------------------------------- 
 DELETE FSR
 FROM dbo.FeeScheduleRecord fsr

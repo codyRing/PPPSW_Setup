@@ -5,7 +5,7 @@
     <CreatedBy>crissler</CreatedBy>
     <CreatedOn>5/12/2020 6:03:59 PM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/18/2020 5:45:20 PM</UpdatedOn>
+    <UpdatedOn>5/20/2020 1:09:47 PM</UpdatedOn>
     <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
     <Execute />
     <Tasks>
@@ -44,7 +44,9 @@ SELECT [contract] = e.Entity
     ,EndEffectiveDate = e.EndDate
 FROM @Entity e
     ,Facility
-    ,BillType</Sql>
+    ,BillType
+Where 
+    BillType.[Key] = 'Profee'</Sql>
       </Task>
       <Task choice="LoadSchedule">
         <Name>Blue Cross Fixed Schedule Area 4</Name>
@@ -66,6 +68,11 @@ FROM @Entity e
           <Parameter>
             <Key>EndDate</Key>
             <Value>2999-12-31</Value>
+            <Literalize>1</Literalize>
+          </Parameter>
+          <Parameter>
+            <Key>Locality</Key>
+            <Value>4</Value>
             <Literalize>1</Literalize>
           </Parameter>
         </Parameters>
@@ -93,15 +100,17 @@ SELECT
     ,Insurance = Insurance.[key]
     ,StartEffectiveDate = {StartDate}
     ,EndEffectiveDate = {EndDate}
-FROM Facility
-    ,Insurance
+FROM Facility 
+        join [dbo].[BlueCossFacilityLocalityMap] map
+            on Facility.[key] = map.facility
+
+    Cross apply Insurance
+
+
 WHERE 
-    Insurance.[Key] = {Insurance}AND
-    Facility.FacilityType = 'Clinic'  and
-    Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
-        '92270'
-        ,'92236'
-        )
+    Insurance.[Key] = {Insurance} AND
+    map.Locality = {Locality} and
+    Facility.FacilityType = 'Clinic'
 
 --------------------------------------------Fee Schedule Record Load--------------------------------- 
 DELETE FSR
@@ -156,6 +165,11 @@ srce.ScheduleName = {Schedule}</FeeRecordSql>
             <Value>2999-12-31</Value>
             <Literalize>1</Literalize>
           </Parameter>
+          <Parameter>
+            <Key>Locality</Key>
+            <Value>5</Value>
+            <Literalize>1</Literalize>
+          </Parameter>
         </Parameters>
         <Description>
         </Description>
@@ -181,14 +195,17 @@ SELECT
     ,Insurance = Insurance.[key]
     ,StartEffectiveDate = {StartDate}
     ,EndEffectiveDate = {EndDate}
-FROM Facility
-    ,Insurance
+FROM Facility 
+        join [dbo].[BlueCossFacilityLocalityMap] map
+            on Facility.[key] = map.facility
+
+    Cross apply Insurance
+
+
 WHERE 
-    Insurance.[Key] = {Insurance}AND
-    Facility.FacilityType = 'Clinic'  and
-    Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
-    ----No area 5 facilities 
-        )
+    Insurance.[Key] = {Insurance} AND
+    map.Locality = {Locality} and
+    Facility.FacilityType = 'Clinic'
 
 --------------------------------------------Fee Schedule Record Load--------------------------------- 
 DELETE FSR
@@ -243,6 +260,11 @@ srce.ScheduleName = {Schedule}</FeeRecordSql>
             <Value>2999-12-31</Value>
             <Literalize>1</Literalize>
           </Parameter>
+          <Parameter>
+            <Key>Locality</Key>
+            <Value>6</Value>
+            <Literalize>1</Literalize>
+          </Parameter>
         </Parameters>
         <Description>
         </Description>
@@ -268,16 +290,17 @@ SELECT
     ,Insurance = Insurance.[key]
     ,StartEffectiveDate = {StartDate}
     ,EndEffectiveDate = {EndDate}
-FROM Facility
-    ,Insurance
+FROM Facility 
+        join [dbo].[BlueCossFacilityLocalityMap] map
+            on Facility.[key] = map.facility
+
+    Cross apply Insurance
+
+
 WHERE 
-    Insurance.[Key] = {Insurance}AND
-    Facility.FacilityType = 'Clinic'  and
-    Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
-    '92553'
-    ,'92881'
-    ,'92506'
-        )
+    Insurance.[Key] = {Insurance} AND
+    map.Locality = {Locality} and
+    Facility.FacilityType = 'Clinic'
 
 --------------------------------------------Fee Schedule Record Load--------------------------------- 
 DELETE FSR
@@ -332,6 +355,11 @@ srce.ScheduleName = {Schedule}</FeeRecordSql>
             <Value>2999-12-31</Value>
             <Literalize>1</Literalize>
           </Parameter>
+          <Parameter>
+            <Key>Locality</Key>
+            <Value>7</Value>
+            <Literalize>1</Literalize>
+          </Parameter>
         </Parameters>
         <Description>
         </Description>
@@ -357,26 +385,17 @@ SELECT
     ,Insurance = Insurance.[key]
     ,StartEffectiveDate = {StartDate}
     ,EndEffectiveDate = {EndDate}
-FROM Facility
-    ,Insurance
+FROM Facility 
+        join [dbo].[BlueCossFacilityLocalityMap] map
+            on Facility.[key] = map.facility
+
+    Cross apply Insurance
+
+
 WHERE 
-    Insurance.[Key] = {Insurance}AND
-    Facility.FacilityType = 'Clinic'  and
-    Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
-            '92111'
-            ,'91911'
-            ,'92109'
-            ,'92101'
-            ,'92101'
-            ,'92101'
-            ,'92025'
-            ,'92105'
-            ,'92081'
-            ,'92020'
-            ,'92115'
-            ,'92126'
-            ,'92114'
-        )
+    Insurance.[Key] = {Insurance} AND
+    map.Locality = {Locality} and
+    Facility.FacilityType = 'Clinic'
 
 --------------------------------------------Fee Schedule Record Load--------------------------------- 
 DELETE FSR
@@ -431,6 +450,11 @@ srce.ScheduleName = {Schedule}</FeeRecordSql>
             <Value>2999-12-31</Value>
             <Literalize>1</Literalize>
           </Parameter>
+          <Parameter>
+            <Key>Locality</Key>
+            <Value>9</Value>
+            <Literalize>1</Literalize>
+          </Parameter>
         </Parameters>
         <Description>
         </Description>
@@ -456,14 +480,17 @@ SELECT
     ,Insurance = Insurance.[key]
     ,StartEffectiveDate = {StartDate}
     ,EndEffectiveDate = {EndDate}
-FROM Facility
-    ,Insurance
+FROM Facility 
+        join [dbo].[BlueCossFacilityLocalityMap] map
+            on Facility.[key] = map.facility
+
+    Cross apply Insurance
+
+
 WHERE 
-    Insurance.[Key] = {Insurance}AND
-    Facility.FacilityType = 'Clinic'  and
-    Facility.Body.value('(Entity/ZipCode)[1]', 'varchar(max)') IN (
-    '92243'
-        )
+    Insurance.[Key] = {Insurance} AND
+    map.Locality = {Locality} and
+    Facility.FacilityType = 'Clinic'
 
 --------------------------------------------Fee Schedule Record Load--------------------------------- 
 DELETE FSR

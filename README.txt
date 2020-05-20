@@ -1,4 +1,6 @@
-Test Site: https://test.mymdclarity.com/V6.45.4/LogIn.aspx?cid=PPPSW_Contract
+Test Site: 
+https://test.mymdclarity.com/V6.45.4/LogIn.aspx?cid=PPPSW_Contract
+https://test.mymdclarity.com/v6.46.0/prodmirror/LogIn.aspx?cid=PPSW_Contract
 
 Check Fee Compare/Audit for :59400
 
@@ -36,6 +38,6 @@ Done ------ Constrain UHC Schedule map load to facility type clinic
 
 5/19 AM Call
 Copy Place of service hospital schedule inserts. Even run incase an hospital is ever added
-Contract map Billtype constain to only profee bill types
+Done ------ Contract map Billtype constain to only profee bill types
 Probably need a "Schedule date Column" to use in schedule name and to denote all of these rates from 2008 RVU's.This date will be in schedule name.
 Need a facility zip map table. 

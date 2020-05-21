@@ -1,15 +1,26 @@
 USE [PPPSW_Contract]
 GO
 
-/****** Object:  Table [dbo].[ImportUnitedHealthCareSchedule]    Script Date: 5/18/2020 3:17:34 PM ******/
+--ALTER TABLE [dbo].[TransformUnitedHealthCareSchedule] DROP CONSTRAINT [DF__Transform__RowDa__15C52FC4]
+--GO
+
+--ALTER TABLE [dbo].[TransformUnitedHealthCareSchedule] DROP CONSTRAINT [DF__Transform__Recor__14D10B8B]
+--GO
+
+--/****** Object:  Table [dbo].[TransformUnitedHealthCareSchedule]    Script Date: 5/21/2020 11:52:12 AM ******/
+--DROP TABLE [dbo].[TransformUnitedHealthCareSchedule]
+--GO
+
+/****** Object:  Table [dbo].[TransformUnitedHealthCareSchedule]    Script Date: 5/21/2020 11:52:12 AM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE TABLE [dbo].[TransfromUnitedHealthCareSchedule](
+CREATE TABLE [dbo].[TransformUnitedHealthCareSchedule](
 	[Fname] [varchar](100) NULL,
+	[Area] varchar(50) null,
 	[Code] [varchar](50) NULL,
 	[Modifier] [varchar](50) NULL,
 	[Remark] [varchar](100) NULL,
@@ -27,10 +38,10 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[TransfromUnitedHealthCareSchedule] ADD  DEFAULT (newid()) FOR [RecordID]
+ALTER TABLE [dbo].[TransformUnitedHealthCareSchedule] ADD  DEFAULT (newid()) FOR [RecordID]
 GO
 
-ALTER TABLE [dbo].[TransfromUnitedHealthCareSchedule] ADD  DEFAULT (getdate()) FOR [RowDate]
+ALTER TABLE [dbo].[TransformUnitedHealthCareSchedule] ADD  DEFAULT (getdate()) FOR [RowDate]
 GO
 
 

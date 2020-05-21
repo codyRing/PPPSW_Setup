@@ -1,16 +1,16 @@
 USE [PPPSW_Contract]
 GO
 
-ALTER TABLE [dbo].[BlueCossFacilityLocalityMap] DROP CONSTRAINT [FK__BlueCossF__Facil__6F9F86DC]
-GO
+--ALTER TABLE [dbo].[BlueCossFacilityLocalityMap] DROP CONSTRAINT [FK__BlueCossF__Facil__6F9F86DC]
+--GO
 
-/****** Object:  Table [dbo].[BlueCossFacilityLocalityMap]    Script Date: 5/20/2020 12:49:17 PM ******/
-DROP TABLE [dbo].[BlueCossFacilityLocalityMap]
-GO
+--/****** Object:  Table [dbo].[BlueCossFacilityLocalityMap]    Script Date: 5/20/2020 12:49:17 PM ******/
+--DROP TABLE [dbo].[BlueCossFacilityLocalityMap]
+--GO
 
-/****** Object:  Table [dbo].[BlueCossFacilityLocalityMap]    Script Date: 5/20/2020 12:49:17 PM ******/
-SET ANSI_NULLS ON
-GO
+--/****** Object:  Table [dbo].[BlueCossFacilityLocalityMap]    Script Date: 5/20/2020 12:49:17 PM ******/
+--SET ANSI_NULLS ON
+--GO
 
 SET QUOTED_IDENTIFIER ON
 GO

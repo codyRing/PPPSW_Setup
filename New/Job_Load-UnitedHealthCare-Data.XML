@@ -5,7 +5,7 @@
     <CreatedBy>crissler</CreatedBy>
     <CreatedOn>5/18/2020 11:54:49 AM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/18/2020 3:37:30 PM</UpdatedOn>
+    <UpdatedOn>5/21/2020 11:56:43 AM</UpdatedOn>
     <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
     <Execute />
     <Tasks>
@@ -36,8 +36,9 @@
         <Name>Load-TransformCarrier</Name>
         <Disabled>0</Disabled>
         <ContinueOnError>0</ContinueOnError>
-        <Sql>INSERT INTO dbo.TransfromUnitedHealthCareSchedule (
+        <Sql>INSERT INTO dbo.TransformUnitedHealthCareSchedule (
     [Fname]
+    ,[Area]
     ,[Code]
     ,[Modifier]
     ,[Remark]
@@ -47,7 +48,9 @@
     ,[StartDate]
     ,[EndDate]
     )
-SELECT i.[Fname]
+SELECT 
+    i.[Fname]
+    ,Area = 'All'
     ,i.[Code]
     ,i.[Modifier]
     ,i.[Remark]
@@ -62,17 +65,44 @@ SELECT i.[Fname]
     ,i.[StartDate]
     ,i.[EndDate]
 FROM dbo.ImportUnitedHealthCareSchedule i
-LEFT JOIN [dbo].[TransfromUnitedHealthCareSchedule] t
+LEFT JOIN [dbo].[TransformUnitedHealthCareSchedule] t
     ON i.Code = t.code
         AND isnull(i.Modifier,1) = isnull(t.Modifier,1)
         AND i.Amount = t.amount
+        and i.StartDate = t.StartDate
+        AND i.EndDate = t.EndDate
 WHERE t.recordid IS NULL</Sql>
       </Task>
       <Task choice="ExecuteSql">
         <Name>Load SourceScheduleData</Name>
         <Disabled>0</Disabled>
         <ContinueOnError>0</ContinueOnError>
-        <Sql>INSERT INTO dbo.sourcescheduledata (
+        <Sql>---Delete replaced records from source schedule data
+DELETE
+FROM dbo.SourceScheduleData
+WHERE RecordID IN (
+        SELECT tt.RecordID
+        FROM (
+            SELECT 
+            indx = row_number() OVER (
+                PARTITION BY 
+                    code
+                    ,placeOfService
+                    ,area
+                    ,modifier 
+                ORDER BY 
+                    StartDate DESC  )
+                ,t.RecordID
+            FROM dbo.TransformUnitedHealthCareSchedule t
+            ) tt
+        LEFT JOIN dbo.SourceScheduleData s
+            ON tt.RecordID = s.RecordID
+        WHERE tt.indx &gt; 1
+        )
+
+
+------Insert new replacement records
+INSERT INTO dbo.sourcescheduledata (
     code
     ,Modifier
     ,PlaceOfService
@@ -83,19 +113,41 @@ WHERE t.recordid IS NULL</Sql>
     ,ScheduleName
     ,RecordID
     )
-SELECT t.code
-    ,t.modifier
-    ,t.PlaceOfService 
-    ,t.Amount
-    ,t.StartDate
-    ,t.EndDate
-    ,Area = 'All'
-    ,ScheduleName = 'UnitedHealthCare-Fixed-Clinic'
-    ,t.RecordID
-    FROM dbo.TransfromUnitedHealthCareSchedule t
-LEFT JOIN dbo.SourceScheduleData s
-    ON t.RecordID = s.RecordID
-WHERE s.RecordID IS NULL</Sql>
+SELECT 
+    tt.code
+    ,tt.modifier
+    ,tt.PlaceOfService
+    ,tt.Amount
+    ,tt.StartDate
+    ,tt.EndDate
+    ,tt.Area
+    ,tt.ScheduleName
+    ,tt.RecordID
+FROM (
+    SELECT indx = row_number() OVER (
+                PARTITION BY 
+                    code
+                    ,placeOfService
+                    ,area
+                    ,modifier 
+                ORDER BY 
+                    StartDate DESC      )
+        ,t.code
+        ,t.modifier
+        ,t.PlaceOfService
+        ,t.Amount
+        ,t.StartDate
+        ,t.EndDate
+        ,t.Area 
+        ,ScheduleName = 'UnitedHealthCare-Fixed-Clinic'
+        ,t.RecordID
+    FROM dbo.TransformUnitedHealthCareSchedule t
+    ) tt
+    left join dbo.SourceScheduleData s
+        on tt.RecordID = s.RecordID
+WHERE 
+    tt.indx = 1 and
+    s.RecordID is null</Sql>
       </Task>
     </Tasks>
   </Job>

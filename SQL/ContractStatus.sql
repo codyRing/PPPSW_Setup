@@ -1,4 +1,12 @@
 use PPPSW_Contract
+Declare @Schedule varchar(50) ='BlueCross-Fixed-Clinic-Area4'
+Declare @Scheduletype varchar(50) = 'Fixed-Fees'
+Declare @Insurance varchar(50) = 'Blue Cross'
+Declare @StartDate date = '2019-01-01'
+Declare @EndDate date = '2999-12-31'
+Declare @Locality int = 5
+
+
 DECLARE @code VARCHAR(50) = '59400'
 Declare @servicedate date = '4/1/2020'
 

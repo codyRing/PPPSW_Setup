@@ -5,7 +5,7 @@
     <CreatedBy>system</CreatedBy>
     <CreatedOn>5/12/2020 6:09:36 PM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/18/2020 4:01:29 PM</UpdatedOn>
+    <UpdatedOn>5/21/2020 10:46:12 AM</UpdatedOn>
     <TableName>ImportBlueCrossSchedule</TableName>
     <Columns>
       <ColumnSpec>
@@ -49,6 +49,18 @@
         <Type choice="Measure" />
         <Nullable>1</Nullable>
         <Width>100</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>StartDate</Name>
+        <Type choice="DateTime" />
+        <Nullable>0</Nullable>
+        <Width>0</Width>
+      </ColumnSpec>
+      <ColumnSpec>
+        <Name>EndDate</Name>
+        <Type choice="DateTime" />
+        <Nullable>0</Nullable>
+        <Width>0</Width>
       </ColumnSpec>
     </Columns>
     <RowTerminator choice="Newline" />

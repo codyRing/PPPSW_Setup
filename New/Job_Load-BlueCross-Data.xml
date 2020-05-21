@@ -5,7 +5,7 @@
     <CreatedBy>crissler</CreatedBy>
     <CreatedOn>5/18/2020 12:35:37 PM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/18/2020 4:36:44 PM</UpdatedOn>
+    <UpdatedOn>5/21/2020 10:46:43 AM</UpdatedOn>
     <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
     <Execute />
     <Tasks>
@@ -36,86 +36,99 @@
         <Name>Load-TransformTable</Name>
         <Disabled>0</Disabled>
         <ContinueOnError>0</ContinueOnError>
-        <Sql>;With i as(
-SELECT area
-    ,code
-    ,CASE 
-        WHEN Modifier LIKE 'GlobalComponent'
-            THEN NULL
-        WHEN Modifier LIKE 'ProfessionalComponent'
-            THEN '26'
-        WHEN Modifier LIKE 'TechincalComponent'
-            THEN 'TC'
-        WHEN Modifier LIKE 'FacilityComponent'
-            THEN NULL
-        END AS modifier
-    ,CASE 
-        WHEN Modifier IN (
-                'GlobalComponent'
-                ,'ProfessionalComponent'
-                ,'TechincalComponent'
-                )
-            THEN 'Clinic'
-        WHEN Modifier LIKE 'FacilityComponent'
-            THEN 'Hospital'
-        END AS PlaceOfService
-    ,Amount
-FROM ImportBlueCrossSchedule i
-unpivot(Amount FOR Modifier IN (
-            GlobalComponent
-            ,ProfessionalComponent
-            ,TechincalComponent
-            ,FacilityComponent
-            )) unpiv
-            )
-Insert into dbo.[TransformBlueCrossSchedule](
-[Area]
-,[Code]
-,[Amount]
-,[PlaceOfService]
-,[Modifier])
-
-Select
-i.[Area]
-,i.[Code]
-,i.[Amount]
-,i.[PlaceOfService]
-,i.[Modifier]
-
-
-
-    from i
-        left join dbo.[TransformBlueCrossSchedule] t
-            on 
-             i.Area = t.Area and
-            isnull( i.modifier,1) = isnull(t.modifier,1) and
-            i.PlaceOfService = t.PlaceOfService and
-            i.Amount = t.Amount
- where t.RecordID is null
-
-
+        <Sql>;WITH i AS (
+    SELECT area
+        ,code
+        ,CASE 
+            WHEN Modifier LIKE 'GlobalComponent'
+                THEN NULL
+            WHEN Modifier LIKE 'ProfessionalComponent'
+                THEN '26'
+            WHEN Modifier LIKE 'TechincalComponent'
+                THEN 'TC'
+            WHEN Modifier LIKE 'FacilityComponent'
+                THEN NULL
+            END AS modifier
+        ,CASE 
+            WHEN Modifier IN (
+                    'GlobalComponent'
+                    ,'ProfessionalComponent'
+                    ,'TechincalComponent'
+                    )
+                THEN 'Clinic'
+            WHEN Modifier LIKE 'FacilityComponent'
+                THEN 'Hospital'
+            END AS PlaceOfService
+        ,Amount
+        ,StartDate
+        ,EndDate
+    FROM ImportBlueCrossSchedule i
+    unpivot(Amount FOR Modifier IN (
+                GlobalComponent
+                ,ProfessionalComponent
+                ,TechincalComponent
+                ,FacilityComponent
+                )) unpiv
+    )
     
--------------Don't need delete
--- WITH cte
--- AS (
-    -- SELECT indx = row_number() OVER (
-            -- PARTITION BY area
-            -- ,code
-            -- ,placeofservice
-            -- ,modifier ORDER BY rowDate DESC
-            -- )
-        -- ,*
-    -- FROM transformbluecrossschedule
-    -- )
--- DELETE
--- FROM cte
--- WHERE indx &gt; 1</Sql>
+INSERT INTO dbo.[TransformBlueCrossSchedule] (
+    [Area]
+    ,[Code]
+    ,[Amount]
+    ,[PlaceOfService]
+    ,[Modifier]
+    ,[StartDate]
+    ,[EndDate]
+    )
+    
+SELECT 
+    i.[Area]
+    ,i.[Code]
+    ,i.[Amount]
+    ,i.[PlaceOfService]
+    ,i.[Modifier]
+    ,i.StartDate
+    ,i.EndDate
+FROM i
+LEFT JOIN dbo.[TransformBlueCrossSchedule] t
+    ON i.Area = t.Area
+        AND isnull(i.modifier, 1) = isnull(t.modifier, 1)
+        AND i.PlaceOfService = t.PlaceOfService
+        AND i.Amount = t.Amount
+        AND i.StartDate = t.StartDate
+        AND i.EndDate = t.EndDate
+WHERE t.RecordID IS NULL</Sql>
       </Task>
       <Task choice="ExecuteSql">
         <Name>Load-SourceScheduleData</Name>
         <Disabled>0</Disabled>
         <ContinueOnError>0</ContinueOnError>
-        <Sql>INSERT INTO dbo.sourcescheduledata (
+        <Sql>---Delete replaced records from source schedule data
+DELETE
+FROM dbo.SourceScheduleData
+WHERE RecordID IN (
+        SELECT tt.RecordID
+        FROM (
+            Select  
+                    indx = row_number() OVER (
+                    PARTITION BY 
+                        code
+                        ,placeOfService
+                        ,area
+                        ,modifier 
+                    ORDER BY 
+                        StartDate DESC      )
+                ,t.RecordID
+            FROM dbo.TransformBlueCrossSchedule t
+            ) tt
+        LEFT JOIN dbo.SourceScheduleData s
+            ON tt.RecordID = s.RecordID
+        WHERE tt.indx &gt; 1
+        )
+
+
+------Insert new replacement records
+INSERT INTO dbo.sourcescheduledata (
     code
     ,Modifier
     ,PlaceOfService
@@ -126,19 +139,42 @@ i.[Area]
     ,ScheduleName
     ,RecordID
     )
-SELECT i.code
-    ,i.modifier
-    ,i.PlaceOfService
-    ,i.Amount
-    ,StartDate = '2019-01-01'
-    ,EndDate = '2999-12-31'
-    ,i.Area
-    ,ScheduleName = 'BlueCross-Fixed-Clinic-Area' + i.area
-    ,i.RecordID
-FROM dbo.TransformBlueCrossSchedule i
-LEFT JOIN dbo.SourceScheduleData s
-    ON i.RecordID = s.RecordID
-WHERE s.RecordID IS NULL</Sql>
+SELECT 
+    tt.code
+    ,tt.modifier
+    ,tt.PlaceOfService
+    ,tt.Amount
+    ,tt.StartDate
+    ,tt.EndDate
+    ,tt.Area
+    ,tt.ScheduleName
+    ,tt.RecordID
+FROM (
+    SELECT                  
+            indx = row_number() OVER (
+            PARTITION BY 
+                code
+                ,placeOfService
+                ,area
+                ,modifier 
+            ORDER BY 
+                StartDate DESC      )
+        ,t.code
+        ,t.modifier
+        ,t.PlaceOfService
+        ,t.Amount
+        ,t.StartDate
+        ,t.EndDate
+        ,t.Area 
+        ,ScheduleName = 'BlueCross-Fixed-Clinic-Area' + t.area
+        ,t.RecordID
+    FROM dbo.TransformBlueCrossSchedule t
+    ) tt
+    left join dbo.SourceScheduleData s
+        on tt.RecordID = s.RecordID
+WHERE 
+    tt.indx = 1 and
+    s.RecordID is null</Sql>
       </Task>
     </Tasks>
   </Job>

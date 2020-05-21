@@ -1,0 +1,62 @@
+<metadata>
+  <Customer>
+    <Key>PPPSW_Contract</Key>
+    <Description null="yes" />
+    <CreatedBy>aburke</CreatedBy>
+    <CreatedOn>3/5/2020 5:10:00 PM</CreatedOn>
+    <UpdatedBy>malbainy</UpdatedBy>
+    <UpdatedOn>4/24/2020 11:46:13 AM</UpdatedOn>
+    <Database>PPPSW_Contract</Database>
+    <Website null="yes" />
+    <PatientWebsite null="yes" />
+    <JobsInProgressAlertMessage null="yes" />
+    <AccountPropertyQuery null="yes" />
+    <Create />
+    <Parameters>
+      <Parameter>
+        <Key>SourceDataFolder</Key>
+        <Value>\\dc1.mdclarity.local\AGShare\ClientData\PPPSW</Value>
+        <Literalize>0</Literalize>
+      </Parameter>
+      <Parameter>
+        <Key>SourceDataArchive</Key>
+        <Value>\\dc1.mdclarity.local\AGShare\ClientData\PPPSW\Archive</Value>
+        <Literalize>0</Literalize>
+      </Parameter>
+      <Parameter>
+        <Key>SSHToolPath</Key>
+        <Value>\\dc1.mdclarity.local\AGShare\Builds\SSHClientTool</Value>
+        <Literalize>0</Literalize>
+      </Parameter>
+      <Parameter>
+        <Key>OrganizationName</Key>
+        <Value>Planned Parenthood of the Pacific Southwest</Value>
+        <Literalize>0</Literalize>
+      </Parameter>
+      <Parameter>
+        <Key>WebDataFolder</Key>
+        <Value>C:\Users\Public</Value>
+        <Literalize>0</Literalize>
+      </Parameter>
+    </Parameters>
+    <EsEnabled>0</EsEnabled>
+    <EsSearchEnabled>0</EsSearchEnabled>
+    <IsCommonData>0</IsCommonData>
+    <UseCommonData>
+      <CommonDataDatabaseName>CommonData</CommonDataDatabaseName>
+      <Job>0</Job>
+      <Report>0</Report>
+      <FeeLogic>1</FeeLogic>
+      <BillType>1</BillType>
+      <Insurance>1</Insurance>
+      <Dimension>1</Dimension>
+      <PivotTable>1</PivotTable>
+      <ApiReference>1</ApiReference>
+      <PropertyType>1</PropertyType>
+      <DataFileSpec>0</DataFileSpec>
+      <LetterTemplate>1</LetterTemplate>
+      <UserAndUserRole>1</UserAndUserRole>
+      <BenefitMessageRule>1</BenefitMessageRule>
+    </UseCommonData>
+  </Customer>
+</metadata>

@@ -5,7 +5,7 @@
     <CreatedBy>crissler</CreatedBy>
     <CreatedOn>5/12/2020 6:03:59 PM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/21/2020 10:46:50 AM</UpdatedOn>
+    <UpdatedOn>5/21/2020 5:35:30 PM</UpdatedOn>
     <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
     <Execute />
     <Tasks>
@@ -18,7 +18,7 @@
                         ,EndDate date)
 
 INSERT INTO @Entity (Entity,StartDate,EndDate)
-VALUES ('Blue Cross','2019-01-01','2999-12-31')
+VALUES ('Blue Cross','2019-07-01','2999-12-31')
     
 
 
@@ -62,7 +62,7 @@ Where
           </Parameter>
           <Parameter>
             <Key>StartDate</Key>
-            <Value>2019-01-01</Value>
+            <Value>2019-07-01</Value>
             <Literalize>1</Literalize>
           </Parameter>
           <Parameter>
@@ -157,7 +157,7 @@ srce.ScheduleName = {Schedule}</FeeRecordSql>
           </Parameter>
           <Parameter>
             <Key>StartDate</Key>
-            <Value>2019-01-01</Value>
+            <Value>2019-07-01</Value>
             <Literalize>1</Literalize>
           </Parameter>
           <Parameter>
@@ -252,7 +252,7 @@ srce.ScheduleName = {Schedule}</FeeRecordSql>
           </Parameter>
           <Parameter>
             <Key>StartDate</Key>
-            <Value>2019-01-01</Value>
+            <Value>2019-07-01</Value>
             <Literalize>1</Literalize>
           </Parameter>
           <Parameter>
@@ -347,7 +347,7 @@ srce.ScheduleName = {Schedule}</FeeRecordSql>
           </Parameter>
           <Parameter>
             <Key>StartDate</Key>
-            <Value>2019-01-01</Value>
+            <Value>2019-07-01</Value>
             <Literalize>1</Literalize>
           </Parameter>
           <Parameter>
@@ -442,7 +442,7 @@ srce.ScheduleName = {Schedule}</FeeRecordSql>
           </Parameter>
           <Parameter>
             <Key>StartDate</Key>
-            <Value>2019-01-01</Value>
+            <Value>2019-07-01</Value>
             <Literalize>1</Literalize>
           </Parameter>
           <Parameter>
@@ -522,6 +522,39 @@ FROM SourceScheduleData AS srce
 WHERE 
 srce.PlaceOfService = 'Clinic' and
 srce.ScheduleName = {Schedule}</FeeRecordSql>
+      </Task>
+      <Task choice="ExecuteSql">
+        <Name>Extend Medicare Schedules</Name>
+        <Disabled>0</Disabled>
+        <ContinueOnError>0</ContinueOnError>
+        <Sql>Declare @entity varchar(50) = 'Blue Cross'
+delete from ScheduleMap
+where Insurance = @entity
+and ScheduleType in
+  (
+  select distinct ScheduleType
+  from ScheduleMap
+  where Insurance = 'Medicare'
+  )
+
+insert into ScheduleMap
+  (
+  Schedule
+  ,ScheduleType
+  ,Facility
+  ,Insurance
+  ,StartEffectiveDate
+  ,EndEffectiveDate
+  )
+select
+  Schedule
+  ,ScheduleType
+  ,Facility
+  ,Insurance = @entity
+  ,StartEffectiveDate
+  ,EndEffectiveDate
+from ScheduleMap
+where Insurance = 'Medicare'</Sql>
       </Task>
     </Tasks>
   </Job>

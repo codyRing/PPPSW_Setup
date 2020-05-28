@@ -5,7 +5,7 @@
     <CreatedBy>crissler</CreatedBy>
     <CreatedOn>5/18/2020 11:54:49 AM</CreatedOn>
     <UpdatedBy>crissler</UpdatedBy>
-    <UpdatedOn>5/21/2020 11:56:43 AM</UpdatedOn>
+    <UpdatedOn>5/21/2020 2:35:19 PM</UpdatedOn>
     <EnableJobInProgressAlert>0</EnableJobInProgressAlert>
     <Execute />
     <Tasks>
@@ -14,7 +14,7 @@
         <Disabled>1</Disabled>
         <ContinueOnError>0</ContinueOnError>
         <DataFileSpecKey>ImportUnitedHealthCareSchedule</DataFileSpecKey>
-        <FilePath>C:\ClientData\PPPSW\Schedules\UnitedSchedulesZD9509.csv</FilePath>
+        <FilePath>{SourceDataFolder}\Schedules\UnitedSchedulesZD9509.csv</FilePath>
         <TableName>ImportUnitedHealthCareSchedule</TableName>
         <RowTerminator choice="Newline" />
         <ColumnSeparator choice="Comma" />
@@ -28,7 +28,7 @@
         <Disabled>0</Disabled>
         <ContinueOnError>0</ContinueOnError>
         <DataFileSpec>ImportUnitedHealthCareSchedule</DataFileSpec>
-        <FilePath>C:\ClientData\PPPSW\Schedules\UnitedSchedulesZD9509.csv</FilePath>
+        <FilePath>{SourceDataFolder}\Schedules\UnitedSchedulesZD9509.csv</FilePath>
         <ImportMode choice="Replace" />
         <MaxInvalidRows>0</MaxInvalidRows>
       </Task>

@@ -1,4 +1,7 @@
 use PPPSW_Contract
+--use master 
+--Execute devops.dbo.restoredb 'PPPSW','Contract'
+
 Declare @Schedule varchar(50) ='BlueCross-Fixed-Clinic-Area4'
 Declare @Scheduletype varchar(50) = 'Fixed-Fees'
 Declare @Insurance varchar(50) = 'Blue Cross'
@@ -66,37 +69,37 @@ From @t	t
 
 
 -------------------------Fee Logic and Schedule--------------------------
-Select
-[key]
-,fl.Body
-,Body.value('(/Entity/BaseCalculations/Calculation/Name)[1]','varchar(max)') Name_1
-,Body.value('(/Entity/BaseCalculations/Calculation/ScheduleType)[1]','varchar(max)') ScheduleType_1
+--Select
+--[key]
+--,fl.Body
+--,Body.value('(/Entity/BaseCalculations/Calculation/Name)[1]','varchar(max)') Name_1
+--,Body.value('(/Entity/BaseCalculations/Calculation/ScheduleType)[1]','varchar(max)') ScheduleType_1
 
-,Body.value('(/Entity/BaseCalculations/Calculation/Name)[2]','varchar(max)') Name_2
-,Body.value('(/Entity/BaseCalculations/Calculation/ScheduleType)[2]','varchar(max)') ScheduleType_2
+--,Body.value('(/Entity/BaseCalculations/Calculation/Name)[2]','varchar(max)') Name_2
+--,Body.value('(/Entity/BaseCalculations/Calculation/ScheduleType)[2]','varchar(max)') ScheduleType_2
 
-,Body.value('(/Entity/BaseCalculations/Calculation/Name)[3]','varchar(max)') Name_3
-,Body.value('(/Entity/BaseCalculations/Calculation/ScheduleType)[3]','varchar(max)') ScheduleType_3
+--,Body.value('(/Entity/BaseCalculations/Calculation/Name)[3]','varchar(max)') Name_3
+--,Body.value('(/Entity/BaseCalculations/Calculation/ScheduleType)[3]','varchar(max)') ScheduleType_3
 
-,Body.value('(/Entity/BaseCalculations/Calculation/Name)[4]','varchar(max)') Name_4
-,Body.value('(/Entity/BaseCalculations/Calculation/ScheduleType)[4]','varchar(max)') ScheduleType_4
+--,Body.value('(/Entity/BaseCalculations/Calculation/Name)[4]','varchar(max)') Name_4
+--,Body.value('(/Entity/BaseCalculations/Calculation/ScheduleType)[4]','varchar(max)') ScheduleType_4
 
-,Body.value('(/Entity/BaseCalculations/Calculation/Name)[5]','varchar(max)') Name_5
-,Body.value('(/Entity/BaseCalculations/Calculation/ScheduleType)[5]','varchar(max)') ScheduleType_5
-from dbo.FeeLogic fl
-	join @t t
-		on fl.[Key] = t.insurance
+--,Body.value('(/Entity/BaseCalculations/Calculation/Name)[5]','varchar(max)') Name_5
+--,Body.value('(/Entity/BaseCalculations/Calculation/ScheduleType)[5]','varchar(max)') ScheduleType_5
+--from dbo.FeeLogic fl
+--	join @t t
+--		on fl.[Key] = t.insurance
 
 
 -------------------------Dimension Member--------------------------------
---select
---row_number() over(partition by t.insurance order by d.dimension)
---,t.ticket
---,t.insurance
---, d.*
---from @t t
---left join DimensionMember d
---	on t.insurance = d.Member
+select
+row_number() over(partition by t.insurance order by d.dimension)
+,t.ticket
+,t.insurance
+, d.*
+from @t t
+left join DimensionMember d
+	on t.insurance = d.Member
 ----------------------------------------------------------------------------------
 --------------Carrier Mapping----------------------------------
 --select 

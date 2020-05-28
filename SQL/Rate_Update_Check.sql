@@ -6,8 +6,10 @@ Declare @Schedule varchar(50) ='United%'
 Declare @TestCode Table(
 code varchar(50))
 insert into @TestCode (code) values
- ('0005U'),('0006M'),('0006U'),('0007M')
-,('0007U'),('0008U'),('0009U'),('0010U')
+-- ('0005U'),('0006M'),('0006U'),('0007M')
+--,('0007U'),('0008U'),('0009U'),('0010U')
+ ('99203'),('87491'),('87591'),('87806')
+
 
 --select * from @TestCode
 -------Setup---------------------
@@ -30,7 +32,7 @@ insert into @TestCode (code) values
 select
 	'import'
 	,* 
-from dbo.ImportUnitedHealthCareSchedule i ----Only records from file that was just loaded
+from dbo.ImportBlueCrossSchedule i ----Only records from file that was just loaded
 	join @TestCode t
 		on i.code = t.code
 
@@ -46,7 +48,7 @@ select
                 ORDER BY 
                     StartDate DESC      )
 	, *
-from dbo.TransformUnitedHealthCareSchedule  i   -------All records we've ever received
+from dbo.TransformBlueCrossSchedule  i   -------All records we've ever received
 	join @TestCode t
 		on i.code = t.code
 

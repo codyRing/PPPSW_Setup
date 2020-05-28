@@ -41,13 +41,13 @@ Done ------ Constrain UHC Schedule map load to facility type clinic
 5/19 AM Call
 Copy Place of service hospital schedule inserts. Even run incase an hospital is ever added
 Done ------ Contract map Billtype constain to only profee bill types
-Probably need a "Schedule date Column" to use in schedule name and to denote all of these rates from 2008 RVU's.This date will be in schedule name.
+Done------------Probably need a "Schedule date Column" to use in schedule name and to denote all of these rates from 2008 RVU's.This date will be in schedule name.
 Done ------ Need a facility zip map table. 
 
 
 
 5/20 Testing
-Fix table name TransfromUnitedHealthCareSchedule    Trans From......
+Done ---Fix table name TransfromUnitedHealthCareSchedule    Trans From......
 
 
 
@@ -56,10 +56,18 @@ Fix table name TransfromUnitedHealthCareSchedule    Trans From......
 cd C:\Users\Public\Documents\
 5/21/2020 Deployment
 	Editor XML
+		Customer
+			9711\PPSW_Editor\Original\Customer_PPPSW_Prod05212020.XML
+			
 		Contracts
 			9711\PPSW_Editor\New\Contract_BlueCross.XML
 			9711\PPSW_Editor\New\Contract_UHC.xml
 			9711\PPSW_Editor\New\Contract_Molina.xml
+			
+		Dimension Member
+			9711\PPSW_Editor\new\DMQuoteInsurance_BlueCross.xml
+			9711\PPSW_Editor\new\DMQuoteInsurance_UnitedHealthCare.xml
+
 		
 		Fee Logic
 			9711\PPSW_Editor\New\FeeLogic_BlueCross.xml
@@ -85,6 +93,17 @@ cd C:\Users\Public\Documents\
 			9711\PPSW_Editor\sql\ImportUnitedHealthCareSchedule.sql
 			9711\PPSW_Editor\sql\TransfromUnitedHealthCareSchedule.sql
 			9711\PPSW_Editor\sql\SourceScheduleData.SQL
+			
+			
+			
+C:\Builds\V6.46.3\Console\driver.exe /exec 'MDClarityMaster' 'PPPSW_Contract' 'Load-BlueCross-Data'
+C:\Builds\V6.46.3\Console\driver.exe /exec 'MDClarityMaster' 'PPPSW_Contract' 'Load-BlueCross-Fees'
+
+C:\Builds\V6.46.3\Console\driver.exe /exec 'MDClarityMaster' 'PPPSW_Contract' 'Load-UnitedHealthCare-Data'
+C:\Builds\V6.46.3\Console\driver.exe /exec 'MDClarityMaster' 'PPPSW_Contract' 'Load-UnitedHealthCare-Fees'
+
+
+
 
 Load files?????
 Select
